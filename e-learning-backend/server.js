@@ -8,6 +8,10 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const enrollmentRoutes = require("./routes/enrollmentRoutes");
 
+const path = require("path"); // Cần cho EJS
+const { fileURLToPath } = require("url"); // Cần cho EJS
+const adminRoutes = require("./routes/adminRoutes.js");
+
 // Load biến môi trường từ file .env
 dotenv.config();
 
@@ -16,6 +20,12 @@ connectDB();
 
 // Khởi tạo app Express
 const app = express();
+
+// --- Cấu hình EJS ---
+app.set("views", path.join(__dirname, "views")); // Dùng __dirname trực tiếp
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+// --- Hết cấu hình EJS ---
 
 // Sử dụng các middleware
 app.use(cors()); // Cho phép các domain khác gọi tới API
@@ -26,6 +36,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+app.use("/admin", adminRoutes); // Route cho trang Admin
 // Dùng các routes
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
