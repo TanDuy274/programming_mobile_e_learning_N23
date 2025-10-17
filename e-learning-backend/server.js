@@ -5,6 +5,7 @@ const cors = require("cors");
 const connectDB = require("./config/db"); // Import hàm kết nối DB
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const courseRoutes = require("./routes/courseRoutes");
 
 // Load biến môi trường từ file .env
 dotenv.config();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 // Dùng các routes
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/courses", courseRoutes);
 
 // Lấy PORT từ biến môi trường, nếu không có thì mặc định là 5000
 const PORT = process.env.PORT || 5001;
