@@ -3,6 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db"); // Import hàm kết nối DB
+const authRoutes = require("./routes/authRoutes");
 
 // Load biến môi trường từ file .env
 dotenv.config();
@@ -22,8 +23,11 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+// Dùng các routes
+app.use("/api/auth", authRoutes);
+
 // Lấy PORT từ biến môi trường, nếu không có thì mặc định là 5000
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Khởi chạy server
 app.listen(PORT, () => {
