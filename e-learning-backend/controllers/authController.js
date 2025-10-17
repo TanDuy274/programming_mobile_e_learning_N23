@@ -92,7 +92,14 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getMe = async (req, res) => {
+  // Nhờ có middleware `protect`, chúng ta đã có `req.user`
+  // chỉ cần gửi nó về cho client là xong.
+  res.status(200).json(req.user);
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  getMe,
 };
