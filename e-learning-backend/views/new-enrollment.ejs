@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Thêm Ghi danh</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      .form-container {
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      select {
+        width: 100%;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Thêm Ghi danh mới</h1>
+    <div class="form-container">
+      <form action="/admin/enrollments/new" method="POST">
+        <div class="form-group">
+          <label for="user">Chọn Học viên:</label>
+          <select id="user" name="user">
+            <% users.forEach(user => { %>
+            <option value="<%= user._id %>">
+              <%= user.name %> (<%= user.email %>)
+            </option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="course">Chọn Khóa học:</label>
+          <select id="course" name="course">
+            <% courses.forEach(course => { %>
+            <option value="<%= course._id %>"><%= course.title %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit">Tạo Ghi danh</button>
+      </form>
+    </div>
+  </body>
+</html>

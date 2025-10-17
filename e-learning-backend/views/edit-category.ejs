@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sửa Danh mục</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      .form-container {
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+      nav a {
+        margin-right: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sửa Danh mục</h1>
+    <div class="form-container">
+      <form action="/admin/categories/<%= category._id %>/edit" method="POST">
+        <label for="name">Tên danh mục:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value="<%= category.name %>"
+          required
+        />
+        <button type="submit">Cập nhật</button>
+      </form>
+    </div>
+  </body>
+</html>

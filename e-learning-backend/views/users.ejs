@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Quản lý Người dùng</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      nav a {
+        margin-right: 15px;
+        text-decoration: none;
+        color: blue;
+        padding-bottom: 5px;
+      }
+      nav a.active {
+        border-bottom: 2px solid blue;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/admin/courses">Khóa học</a>
+      <a href="/admin/categories">Danh mục</a>
+      <a href="/admin/users" class="active">Người dùng</a>
+      <a href="/admin/enrollments">Ghi danh</a>
+      <a href="/admin/reviews">Đánh giá</a>
+    </nav>
+
+    <h1>Danh sách Người dùng</h1>
+    <a
+      href="/admin/users/new"
+      style="
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: green;
+        color: white;
+        text-decoration: none;
+      "
+      >+ Thêm người dùng mới</a
+    >
+    <table>
+      <thead>
+        <tr>
+          <th>Tên</th>
+          <th>Email</th>
+          <th>Vai trò</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+        <tr>
+          <td><%= user.name %></td>
+          <td><%= user.email %></td>
+          <td><%= user.role %></td>
+          <td>
+            <a href="/admin/users/<%= user._id %>/edit">Sửa</a> |
+            <a
+              href="/admin/users/<%= user._id %>/delete"
+              onclick="return confirm('Bạn chắc chắn muốn xóa?')"
+              >Xóa</a
+            >
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>

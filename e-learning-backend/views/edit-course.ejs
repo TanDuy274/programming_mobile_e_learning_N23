@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Khóa học</title>
+    <style>body { font-family: sans-serif; margin: 40px; } .form-container { padding: 20px; border: 1px solid #ccc; } .form-group { margin-bottom: 15px; } label { display: block; margin-bottom: 5px; } input, select, textarea { width: 100%; padding: 8px; }</style>
+</head>
+<body>
+    <h1>Sửa Khóa học</h1>
+    <div class="form-container">
+        <form action="/admin/courses/<%= course._id %>/edit" method="POST">
+            <div class="form-group"><label for="title">Tiêu đề</label><input type="text" id="title" name="title" value="<%= course.title %>" required></div>
+            <div class="form-group"><label for="description">Mô tả</label><textarea id="description" name="description" rows="4"><%= course.description %></textarea></div>
+            <div class="form-group"><label for="price">Giá</label><input type="number" id="price" name="price" value="<%= course.price %>" required></div>
+            <div class="form-group">
+                <label for="instructor">Giảng viên</label>
+                <select id="instructor" name="instructor">
+                    <% teachers.forEach(teacher => { %>
+                        <option value="<%= teacher._id %>" <%= course.instructor.equals(teacher._id) ? 'selected' : '' %>>
+                            <%= teacher.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Danh mục</label>
+                <select id="category" name="category">
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category._id %>" <%= course.category.equals(category._id) ? 'selected' : '' %>>
+                            <%= category.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <button type="submit">Cập nhật</button>
+        </form>
+    </div>
+</body>
+</html>

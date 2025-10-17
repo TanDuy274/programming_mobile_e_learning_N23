@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sửa Đánh giá</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      .form-container {
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sửa Đánh giá</h1>
+    <div class="form-container">
+      <form action="/admin/reviews/<%= review._id %>/edit" method="POST">
+        <div class="form-group">
+          <label for="rating">Điểm (1-5):</label>
+          <input
+            type="number"
+            id="rating"
+            name="rating"
+            min="1"
+            max="5"
+            value="<%= review.rating %>"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="comment">Bình luận:</label>
+          <textarea id="comment" name="comment" rows="3" required>
+<%= review.comment %></textarea
+          >
+        </div>
+        <button type="submit">Cập nhật</button>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Quản lý Danh mục</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .form-container {
+        padding: 20px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+      }
+
+      nav a {
+        margin-right: 15px;
+        text-decoration: none;
+        color: blue;
+        padding-bottom: 5px;
+      }
+
+      nav a.active {
+        border-bottom: 2px solid blue;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <a href="/admin/courses">Khóa học</a>
+      <a href="/admin/categories" class="active">Danh mục</a>
+      <a href="/admin/users">Người dùng</a>
+      <a href="/admin/enrollments">Ghi danh</a>
+      <a href="/admin/reviews">Đánh giá</a>
+    </nav>
+
+    <h1>Quản lý Danh mục</h1>
+
+    <div class="form-container">
+      <h2>Thêm danh mục mới</h2>
+      <form action="/admin/categories" method="POST">
+        <label for="name">Tên danh mục:</label>
+        <input type="text" id="name" name="name" required />
+        <button type="submit">Thêm mới</button>
+      </form>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Tên Danh mục</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% categories.forEach(category=> { %>
+        <tr>
+          <td><%= category.name %></td>
+          <td>
+            <a href="/admin/categories/<%= category._id %>/edit">Sửa</a> |
+            <a
+              href="/admin/categories/<%= category._id %>/delete"
+              onclick="return confirm('Bạn chắc chắn muốn xóa?')"
+              >Xóa</a
+            >
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>

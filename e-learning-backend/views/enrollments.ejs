@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Quản lý Ghi danh</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      nav a {
+        margin-right: 15px;
+        text-decoration: none;
+        color: blue;
+        padding-bottom: 5px;
+      }
+      nav a.active {
+        border-bottom: 2px solid blue;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/admin/courses">Khóa học</a>
+      <a href="/admin/categories">Danh mục</a>
+      <a href="/admin/users">Người dùng</a>
+      <a href="/admin/enrollments" class="active">Ghi danh</a>
+      <a href="/admin/reviews">Đánh giá</a>
+    </nav>
+
+    <h1>Danh sách Ghi danh</h1>
+    <a
+      href="/admin/enrollments/new"
+      style="
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: green;
+        color: white;
+        text-decoration: none;
+      "
+      >+ Thêm ghi danh mới</a
+    >
+    <table>
+      <thead>
+        <tr>
+          <th>Học viên</th>
+          <th>Khóa học đã đăng ký</th>
+          <th>Ngày ghi danh</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% enrollments.forEach(enrollment => { %>
+        <tr>
+          <td><%= enrollment.user ? enrollment.user.name : 'N/A' %></td>
+          <td><%= enrollment.course ? enrollment.course.title : 'N/A' %></td>
+          <td>
+            <%= new Date(enrollment.createdAt).toLocaleDateString('vi-VN') %>
+          </td>
+          <td>
+            <a href="/admin/enrollments/<%= enrollment._id %>/edit">Sửa</a> |
+            <a
+              href="/admin/enrollments/<%= enrollment._id %>/delete"
+              onclick="return confirm('Bạn chắc chắn muốn xóa?')"
+              >Xóa</a
+            >
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>
