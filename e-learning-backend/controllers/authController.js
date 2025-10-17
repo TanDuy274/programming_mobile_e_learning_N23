@@ -53,6 +53,46 @@ const registerUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Kiểm tra email và password có được gửi lên không
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Please provide email and password" });
+    }
+
+    // 2. Tìm user trong database bằng email
+    const user = await User.findOne({ email });
+
+    // 3. Nếu user tồn tại, so sánh mật khẩu
+    //    bcrypt.compare sẽ so sánh mật khẩu người dùng gửi lên với mật khẩu đã mã hóa trong DB
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // Mật khẩu khớp, tạo token mới
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+      });
+
+      // Trả về thông tin user và token
+      res.status(200).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: token,
+      });
+    } else {
+      // User không tồn tại hoặc sai mật khẩu
+      res.status(401).json({ message: "Invalid credentials" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error.message}` });
+  }
+};
+
 module.exports = {
   registerUser,
+  loginUser,
 };
