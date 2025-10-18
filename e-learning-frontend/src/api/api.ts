@@ -3,7 +3,7 @@ import * as SecureStore from "expo-secure-store";
 
 // LƯU Ý QUAN TRỌNG:
 // Dùng địa chỉ IP của máy tính bạn, KHÔNG DÙNG 'localhost'.
-const BASE_URL = "http://localhost:5001/api"; // << THAY ĐỔI ĐỊA CHỈ IP NÀY
+const BASE_URL = "http://192.168.1.69:5001/api"; // << THAY ĐỔI ĐỊA CHỈ IP NÀY
 
 const api = axios.create({
   baseURL: BASE_URL,
