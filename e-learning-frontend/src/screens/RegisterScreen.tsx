@@ -1,19 +1,43 @@
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthStackParamList } from "../navigation/AuthNavigator";
+import { AuthContext } from "../context/AuthContext"; // << Import AuthContext
 
-// Định nghĩa kiểu
 type Props = NativeStackScreenProps<AuthStackParamList, "Register">;
 
 const RegisterScreen = ({ navigation }: Props) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false); // << Thêm state để xử lý loading
 
-  const handleRegister = () => {
-    Alert.alert("Đăng ký", `Name: ${name}, Email: ${email}`);
+  const { register } = useContext(AuthContext); // << Lấy hàm register từ context
+
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
+    setIsRegistering(true);
+    try {
+      // Gọi hàm register từ context
+      await register(name, email, password);
+      // Nếu đăng ký thành công, AppNavigator sẽ tự động chuyển vào màn hình chính
+    } catch (error) {
+      // Bắt lỗi và hiển thị thông báo cụ thể
+      Alert.alert("Đăng ký thất bại", String(error));
+    } finally {
+      setIsRegistering(false);
+    }
   };
 
   return (
@@ -47,15 +71,19 @@ const RegisterScreen = ({ navigation }: Props) => {
         />
 
         <TouchableOpacity
-          className="bg-indigo-600 p-4 rounded-lg items-center"
+          className="bg-indigo-600 p-4 rounded-lg items-center flex-row justify-center"
           onPress={handleRegister}
+          disabled={isRegistering} // Vô hiệu hóa nút khi đang xử lý
         >
-          <Text className="text-white text-lg font-bold">Đăng ký</Text>
+          {isRegistering ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-white text-lg font-bold">Đăng ký</Text>
+          )}
         </TouchableOpacity>
 
         <View className="flex-row justify-center mt-6">
           <Text className="text-gray-500">Đã có tài khoản? </Text>
-          {/* Sửa lại TouchableOpacity */}
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text className="text-indigo-600 font-semibold">Đăng nhập</Text>
           </TouchableOpacity>
