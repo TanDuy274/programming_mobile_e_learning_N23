@@ -4,13 +4,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../navigation/AuthNavigator";
 import { AuthContext } from "../context/AuthContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Register">;
 
