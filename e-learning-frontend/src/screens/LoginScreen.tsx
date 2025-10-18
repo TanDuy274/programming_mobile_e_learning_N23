@@ -1,8 +1,16 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import React, { useContext, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthStackParamList } from "../navigation/AuthNavigator";
+import { AuthContext } from "../context/AuthContext";
 
 // Định nghĩa kiểu cho props của màn hình
 type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
@@ -10,10 +18,24 @@ type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 const LoginScreen = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleLogin = () => {
-    // Tạm thời chỉ hiển thị thông báo
-    Alert.alert("Đăng nhập", `Email: ${email}, Password: ${password}`);
+  const { login } = useContext(AuthContext); // << Lấy hàm login từ context
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
+    setIsLoggingIn(true);
+    try {
+      await login(email, password);
+      // Nếu login thành công, AppNavigator sẽ tự động chuyển màn hình
+    } catch (error) {
+      Alert.alert("Đăng nhập thất bại", String(error));
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -40,10 +62,15 @@ const LoginScreen = ({ navigation }: Props) => {
         />
 
         <TouchableOpacity
-          className="bg-indigo-600 p-4 rounded-lg items-center"
+          className="bg-indigo-600 p-4 rounded-lg items-center flex-row justify-center"
           onPress={handleLogin}
+          disabled={isLoggingIn} // Vô hiệu hóa nút khi đang xử lý
         >
-          <Text className="text-white text-lg font-bold">Đăng nhập</Text>
+          {isLoggingIn ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-white text-lg font-bold">Đăng nhập</Text>
+          )}
         </TouchableOpacity>
 
         <View className="flex-row justify-center mt-6">
