@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
 
 // Import Models
 const Course = require("../models/CourseModel.js");
@@ -206,10 +207,24 @@ router.get("/users/new", (req, res) => {
 router.post("/users/new", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    // Lưu ý: Trong thực tế cần mã hóa mật khẩu trước khi lưu
-    // const salt = await bcrypt.genSalt(10);
-    // const hashedPassword = await bcrypt.hash(password, salt);
-    await User.create({ name, email, password, role }); // Tạm thời lưu password thẳng
+
+    // 1. Kiểm tra xem mật khẩu có được cung cấp không
+    if (!password) {
+      return res.send("Vui lòng cung cấp mật khẩu");
+    }
+
+    // 2. Mã hóa mật khẩu
+    const salt = await bcrypt.genSalt(10); // << Bỏ comment dòng này
+    const hashedPassword = await bcrypt.hash(password, salt); // << Bỏ comment dòng này
+
+    // 3. Tạo người dùng với mật khẩu đã mã hóa
+    await User.create({
+      name,
+      email,
+      password: hashedPassword, // << Sử dụng mật khẩu đã mã hóa
+      role,
+    });
+
     res.redirect("/admin/users");
   } catch (error) {
     res.send("Lỗi khi tạo người dùng (có thể do trùng email)");
