@@ -27,12 +27,6 @@ const userSchema = new mongoose.Schema(
       enum: ["student", "teacher"], // Vai trò chỉ có thể là student hoặc teacher
       default: "student",
     },
-    savedCourses: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
-      },
-    ],
   },
   {
     timestamps: true, // Tự động thêm 2 trường createdAt và updatedAt
