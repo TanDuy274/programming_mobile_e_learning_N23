@@ -107,7 +107,10 @@ Dự án này là một nền tảng học tập trực tuyến, cho phép ngư�
     ```bash
     npm install
     ```
-3.  **Cấu hình địa chỉ IP của backend** trong file `src/api/api.ts`.
+3.  **Tạo file `.env`** trong thư mục gốc và cấu hình địa chỉ IP của máy:
+    ```env
+    EXPO_PUBLIC_API_URL=http://diachiIPcuamay:5001/api
+    ```
 
 ---
 
