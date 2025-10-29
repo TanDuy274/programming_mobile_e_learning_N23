@@ -3,7 +3,7 @@ import * as SecureStore from "expo-secure-store";
 
 // LƯU Ý QUAN TRỌNG:
 // Dùng địa chỉ IP của máy tính bạn, KHÔNG DÙNG 'localhost'.
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL; // << THAY ĐỔI ĐỊA CHỈ IP NÀY
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const api = axios.create({
   baseURL: BASE_URL,
