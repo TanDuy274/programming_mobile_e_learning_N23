@@ -1,36 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Sửa Ghi danh</title>
-    <style>body { font-family: sans-serif; margin: 40px; } .form-container { padding: 20px; border: 1px solid #ccc; } .form-group { margin-bottom: 15px; } label { display: block; margin-bottom: 5px; } select { width: 100%; padding: 8px; }</style>
-</head>
-<body>
-    <h1>Sửa Ghi danh</h1>
-    <div class="form-container">
-        <form action="/admin/enrollments/<%= enrollment._id %>/edit" method="POST">
-            <div class="form-group">
-                <label for="user">Học viên:</label>
-                <select id="user" name="user">
-                    <% users.forEach(user => { %>
-                        <option value="<%= user._id %>" <%= enrollment.user.equals(user._id) ? 'selected' : '' %>>
-                            <%= user.name %> (<%= user.email %>)
-                        </option>
-                    <% }) %>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="course">Khóa học:</label>
-                <select id="course" name="course">
-                    <% courses.forEach(course => { %>
-                        <option value="<%= course._id %>" <%= enrollment.course.equals(course._id) ? 'selected' : '' %>>
-                            <%= course.title %>
-                        </option>
-                    <% }) %>
-                </select>
-            </div>
-            <button type="submit">Cập nhật</button>
-        </form>
+    <style>
+      /* --- Tổng thể --- */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f0f4ff, #dce8ff);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+        margin-top: 60px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px 40px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2a4d9b;
+        font-size: 26px;
+      }
+
+      /* --- Form --- */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+      }
+
+      select,
+      input[type="number"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: 0.2s;
+      }
+
+      select:focus,
+      input[type="number"]:focus {
+        border-color: #4c7bff;
+        box-shadow: 0 0 0 3px rgba(76, 123, 255, 0.2);
+        outline: none;
+      }
+
+      /* --- Nút hành động --- */
+      button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #4c7bff, #5aa3ff);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: linear-gradient(135deg, #3b66e3, #4892ff);
+        transform: translateY(-1px);
+      }
+
+      /* --- Responsive --- */
+      @media (max-width: 480px) {
+        .container {
+          padding: 25px 20px;
+        }
+
+        h1 {
+          font-size: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Sửa Ghi danh</h1>
+      <form action="/admin/enrollments/<%= enrollment._id %>/edit" method="POST">
+        <div class="form-group">
+          <label for="user">Học viên:</label>
+          <select id="user" name="user">
+            <% users.forEach(user => { %>
+              <option value="<%= user._id %>" <%= enrollment.user.equals(user._id) ? 'selected' : '' %>>
+                <%= user.name %> (<%= user.email %>)
+              </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="course">Khóa học:</label>
+          <select id="course" name="course">
+            <% courses.forEach(course => { %>
+              <option value="<%= course._id %>" <%= enrollment.course.equals(course._id) ? 'selected' : '' %>>
+                <%= course.title %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="progress">Tiến độ (%):</label>
+          <input
+            type="number"
+            id="progress"
+            name="progress"
+            value="<%= enrollment.progress %>"
+            min="0"
+            max="100"
+            required
+          />
+        </div>
+
+        <button type="submit">Cập nhật</button>
+      </form>
     </div>
-</body>
+  </body>
 </html>
