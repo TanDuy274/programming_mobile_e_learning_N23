@@ -1,9 +1,9 @@
-const Question = requre("../models/QuestionModel");
+const Question = require("../models/QuestionModel");
 
 // @desc    Lấy tất cả câu hỏi của một khóa học
 // @route   GET /api/questions/:courseId
 // @access  Private
-const getQuestionsByCourse = async (req, res) => {
+const getQuestionsForCourse = async (req, res) => {
   try {
     const questions = await Question.find({ course: req.params.courseId })
       .populate("user", "name")
@@ -45,6 +45,6 @@ const createQuestion = async (req, res) => {
 };
 
 module.exports = {
-  getQuestionsByCourse,
+  getQuestionsForCourse,
   createQuestion,
 };

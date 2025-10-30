@@ -1,9 +1,9 @@
-const Project = requre("../models/ProjectModel");
+const Project = require("../models/ProjectModel");
 
 // @desc    Lấy tất cả dự án của một khóa học
 // @route   GET /api/projects/:courseId
 // @access  Private
-const getProjectsByCourse = async (req, res) => {
+const getProjectsForCourse = async (req, res) => {
   try {
     const projects = await Project.find({ course: req.params.courseId })
       .populate("user", "name")
@@ -36,6 +36,6 @@ const createProject = async (req, res) => {
 };
 
 module.exports = {
-  getProjectsByCourse,
+  getProjectsForCourse,
   createProject,
 };
