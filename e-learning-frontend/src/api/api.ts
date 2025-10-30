@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 // LƯU Ý QUAN TRỌNG:
 // Dùng địa chỉ IP của máy tính bạn, KHÔNG DÙNG 'localhost'.
 <<<<<<<<< Temporary merge branch 1
-const BASE_URL = "http://192.168.1.82:5001/api"; // << THAY ĐỔI ĐỊA CHỈ IP NÀY
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 =========
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL; // << THAY ĐỔI ĐỊA CHỈ IP NÀY
 >>>>>>>>> Temporary merge branch 2
