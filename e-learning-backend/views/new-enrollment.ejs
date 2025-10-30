@@ -4,30 +4,95 @@
     <meta charset="UTF-8" />
     <title>Thêm Ghi danh</title>
     <style>
+      /* --- Tổng thể --- */
       body {
-        font-family: sans-serif;
-        margin: 40px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f0f4ff, #dce8ff);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
       }
-      .form-container {
-        padding: 20px;
-        border: 1px solid #ccc;
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+        margin-top: 60px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px 40px;
       }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2a4d9b;
+        font-size: 26px;
+      }
+
+      /* --- Form --- */
       .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
       }
+
       label {
         display: block;
-        margin-bottom: 5px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
       }
+
       select {
         width: 100%;
-        padding: 8px;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: 0.2s;
+      }
+
+      select:focus {
+        border-color: #4c7bff;
+        box-shadow: 0 0 0 3px rgba(76, 123, 255, 0.2);
+        outline: none;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #4c7bff, #5aa3ff);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: linear-gradient(135deg, #3b66e3, #4892ff);
+        transform: translateY(-1px);
+      }
+
+      /* --- Responsive --- */
+      @media (max-width: 480px) {
+        .container {
+          padding: 25px 20px;
+        }
+
+        h1 {
+          font-size: 22px;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>Thêm Ghi danh mới</h1>
-    <div class="form-container">
+    <div class="container">
+      <h1>Thêm Ghi danh mới</h1>
       <form action="/admin/enrollments/new" method="POST">
         <div class="form-group">
           <label for="user">Chọn Học viên:</label>
@@ -39,6 +104,7 @@
             <% }) %>
           </select>
         </div>
+
         <div class="form-group">
           <label for="course">Chọn Khóa học:</label>
           <select id="course" name="course">
@@ -47,6 +113,7 @@
             <% }) %>
           </select>
         </div>
+
         <button type="submit">Tạo Ghi danh</button>
       </form>
     </div>
