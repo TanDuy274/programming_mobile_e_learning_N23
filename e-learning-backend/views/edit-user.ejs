@@ -1,26 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Sửa Người dùng</title>
-    <style>body { font-family: sans-serif; margin: 40px; } .form-container { padding: 20px; border: 1px solid #ccc; } .form-group { margin-bottom: 15px; } label { display: block; margin-bottom: 5px; } input, select { width: 100%; padding: 8px; }</style>
-</head>
-<body>
-    <h1>Sửa Người dùng</h1>
-    <div class="form-container">
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 40px;
+        background-color: #f9fafb;
+        color: #333;
+      }
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      h1 {
+        text-align: center;
+        color: #222;
+        margin-bottom: 20px;
+      }
+      .form-container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+      }
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box; /* Quan trọng để 100% width hoạt động */
+      }
+      .form-check {
+        display: flex;
+        align-items: center;
+      }
+      .form-check input {
+        width: auto;
+        margin-right: 10px;
+      }
+      .note {
+        font-style: italic;
+        color: #777;
+        font-size: 14px;
+        margin-top: -10px;
+        margin-bottom: 20px;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.2s;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Sửa Người dùng</h1>
+      <div class="form-container">
         <form action="/admin/users/<%= user._id %>/edit" method="POST">
-            <div class="form-group"><label for="name">Tên</label><input type="text" id="name" name="name" value="<%= user.name %>" required></div>
-            <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" value="<%= user.email %>" required></div>
-            <div class="form-group">
-                <label for="role">Vai trò</label>
-                <select id="role" name="role">
-                    <option value="student" <%= user.role === 'student' ? 'selected' : '' %>>Student</option>
-                    <option value="teacher" <%= user.role === 'teacher' ? 'selected' : '' %>>Teacher</option>
-                </select>
-            </div>
-            <p><i>Để trống mật khẩu nếu không muốn thay đổi.</i></p>
-            <button type="submit">Cập nhật</button>
+          <div class="form-group">
+            <label for="name">Tên</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value="<%= user.name %>"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value="<%= user.email %>"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="avatar">Avatar (URL)</label>
+            <input
+              type="text"
+              id="avatar"
+              name="avatar"
+              value="<%= user.avatar %>"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="headline">Headline (Tiểu sử/Vai trò)</label>
+            <input
+              type="text"
+              id="headline"
+              name="headline"
+              value="<%= user.headline %>"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="role">Vai trò</label>
+            <select id="role" name="role">
+              <option value="student" <%= user.role === 'student' ? 'selected' : '' %>>
+                Student
+              </option>
+              <option value="teacher" <%= user.role === 'teacher' ? 'selected' : '' %>>
+                Teacher
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              id="isVerified"
+              name="isVerified"
+              <%= user.isVerified ? 'checked' : '' %>
+            />
+            <label for="isVerified">Đã xác thực (Verified)</label>
+          </div>
+
+          <p class="note">
+            <i>Để trống mật khẩu nếu không muốn thay đổi.</i>
+          </p>
+          <button type="submit">Cập nhật</button>
         </form>
+      </div>
     </div>
-</body>
+  </body>
 </html>
