@@ -1,17 +1,17 @@
-// models/CourseModel.js
 const mongoose = require("mongoose");
 
-// Đây là một "Schema con" (subdocument), nó sẽ được nhúng vào trong Course.
-// Nó không phải là một model riêng biệt.
 const lessonSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
   },
-  // videoUrl: { type: String, required: true }, // Bạn có thể thêm sau khi có hệ thống upload
   duration: {
     // tính bằng phút
     type: Number,
+    required: true,
+  },
+  youtubeVideoId: {
+    type: String,
     required: true,
   },
 });
@@ -22,6 +22,10 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please add a course title"],
       trim: true,
+    },
+    titleNoAccent: {
+      type: String,
+      index: true,
     },
     description: {
       type: String,
@@ -59,5 +63,20 @@ const courseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+function removeVietnameseTones(str = "") {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
+}
+
+courseSchema.pre("save", function (next) {
+  if (this.title) {
+    this.titleNoAccent = removeVietnameseTones(this.title);
+  }
+  next();
+});
 
 module.exports = mongoose.model("Course", courseSchema);
