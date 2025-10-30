@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Quản lý Dự án</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      nav a {
+        margin-right: 15px;
+        text-decoration: none;
+        color: blue;
+        padding-bottom: 5px;
+      }
+      nav a.active {
+        border-bottom: 2px solid blue;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/admin/courses">Khóa học</a>
+      <a href="/admin/categories">Danh mục</a>
+      <a href="/admin/users">Người dùng</a>
+      <a href="/admin/enrollments">Ghi danh</a>
+      <a href="/admin/reviews">Đánh giá</a>
+      <a href="/admin/projects" class="active">Dự án</a>
+      <a href="/admin/questions">Hỏi & Đáp</a>
+    </nav>
+
+    <h1>Danh sách Dự án của Học viên</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Học viên</th>
+          <th>Khóa học</th>
+          <th>Mô tả dự án</th>
+          <th>Tệp đính kèm</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% projects.forEach(project => { %>
+        <tr>
+          <td><%= project.user ? project.user.name : 'N/A' %></td>
+          <td><%= project.course ? project.course.title : 'N/A' %></td>
+          <td style="max-width: 400px; white-space: pre-wrap">
+            <%= project.description %>
+          </td>
+          <td>
+            <% if (project.files && project.files.length > 0) { %>
+            <ul style="margin: 0; padding-left: 16px">
+              <% project.files.forEach(f => { %>
+              <li>
+                <a href="<%= f.url %>" target="_blank"><%= f.name %></a>
+              </li>
+              <% }) %>
+            </ul>
+            <% } else { %>
+            <em>Không có</em>
+            <% } %>
+          </td>
+          <td>
+            <a
+              href="/admin/projects/<%= project._id %>/delete"
+              onclick="return confirm('Bạn chắc chắn muốn xóa?')"
+            >
+              Xóa
+            </a>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>
