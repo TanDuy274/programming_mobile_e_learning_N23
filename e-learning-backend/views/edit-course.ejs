@@ -1,39 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Sửa Khóa học</title>
-    <style>body { font-family: sans-serif; margin: 40px; } .form-container { padding: 20px; border: 1px solid #ccc; } .form-group { margin-bottom: 15px; } label { display: block; margin-bottom: 5px; } input, select, textarea { width: 100%; padding: 8px; }</style>
-</head>
-<body>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      .form-container {
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      .lesson-item {
+        background: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        margin-bottom: 10px;
+      }
+      .lesson-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .remove-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      .add-btn {
+        background: #2ecc71;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
     <h1>Sửa Khóa học</h1>
     <div class="form-container">
-        <form action="/admin/courses/<%= course._id %>/edit" method="POST">
-            <div class="form-group"><label for="title">Tiêu đề</label><input type="text" id="title" name="title" value="<%= course.title %>" required></div>
-            <div class="form-group"><label for="description">Mô tả</label><textarea id="description" name="description" rows="4"><%= course.description %></textarea></div>
-            <div class="form-group"><label for="price">Giá</label><input type="number" id="price" name="price" value="<%= course.price %>" required></div>
-            <div class="form-group">
-                <label for="instructor">Giảng viên</label>
-                <select id="instructor" name="instructor">
-                    <% teachers.forEach(teacher => { %>
-                        <option value="<%= teacher._id %>" <%= course.instructor.equals(teacher._id) ? 'selected' : '' %>>
-                            <%= teacher.name %>
-                        </option>
-                    <% }) %>
-                </select>
+      <form action="/admin/courses/<%= course._id %>/edit" method="POST">
+        <div class="form-group">
+          <label for="title">Tiêu đề</label
+          ><input
+            type="text"
+            id="title"
+            name="title"
+            value="<%= course.title %>"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="description">Mô tả</label
+          ><textarea id="description" name="description" rows="4">
+<%= course.description %></textarea
+          >
+        </div>
+        <div class="form-group">
+          <label for="price">Giá</label
+          ><input
+            type="number"
+            id="price"
+            name="price"
+            value="<%= course.price %>"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="thumbnail">Link ảnh bìa</label
+          ><input
+            type="text"
+            id="thumbnail"
+            name="thumbnail"
+            value="<%= course.thumbnail %>"
+          />
+        </div>
+        <div class="form-group">
+  <label for="instructor">Giảng viên</label>
+  <select id="instructor" name="instructor" required>
+    <% teachers.forEach(teacher => { %>
+      <option
+        value="<%= teacher._id %>"
+        <%= course.instructor && teacher._id.toString() === course.instructor._id.toString() ? "selected" : "" %>>
+        <%= teacher.name %>
+      </option>
+    <% }) %>
+  </select>
+</div>
+        <div class="form-group">
+  <label for="category">Danh mục</label>
+  <select id="category" name="category" required>
+    <% categories.forEach(category => { %>
+      <option
+        value="<%= category._id %>"
+        <%= course.category && category._id.toString() === course.category._id.toString() ? "selected" : "" %>>
+        <%= category.name %>
+      </option>
+    <% }) %>
+  </select>
+</div>
+
+        <hr style="margin: 30px 0" />
+
+        <h2>Quản lý Bài học</h2>
+        <div id="lessons-container">
+          <% course.lessons.forEach((lesson, index) => { %>
+          <div class="lesson-item">
+            <div class="lesson-header">
+              <h4>Bài học <%= index + 1 %></h4>
+              <button
+                type="button"
+                class="remove-btn"
+                onclick="removeLesson(this)"
+              >
+                Xóa
+              </button>
             </div>
             <div class="form-group">
-                <label for="category">Danh mục</label>
-                <select id="category" name="category">
-                    <% categories.forEach(category => { %>
-                        <option value="<%= category._id %>" <%= course.category.equals(category._id) ? 'selected' : '' %>>
-                            <%= category.name %>
-                        </option>
-                    <% }) %>
-                </select>
+              <label>Tiêu đề bài học</label>
+              <input
+                type="text"
+                name="lessons[<%= index %>][title]"
+                value="<%= lesson.title %>"
+                required
+              />
             </div>
-            <button type="submit">Cập nhật</button>
-        </form>
+            <div class="form-group">
+              <label>YouTube Video ID</label>
+              <input
+                type="text"
+                name="lessons[<%= index %>][youtubeVideoId]"
+                value="<%= lesson.youtubeVideoId %>"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Thời lượng (phút)</label>
+              <input
+                type="number"
+                name="lessons[<%= index %>][duration]"
+                value="<%= lesson.duration %>"
+                required
+              />
+            </div>
+          </div>
+          <% }) %>
+        </div>
+        <button type="button" class="add-btn" onclick="addLesson()">
+          + Thêm bài học
+        </button>
+
+        <hr style="margin: 30px 0" />
+        <button type="submit" style="padding: 15px 30px; font-size: 16px">
+          Cập nhật Khóa học
+        </button>
+      </form>
     </div>
-</body>
+
+    <script>
+      let lessonIndex = <%= course.lessons.length %>;
+      const lessonsContainer = document.getElementById('lessons-container');
+
+      function addLesson() {
+          const lessonDiv = document.createElement('div');
+          lessonDiv.className = 'lesson-item';
+          lessonDiv.innerHTML = `
+              <div class="lesson-header">
+                  <h4>Bài học ${lessonIndex + 1}</h4>
+                  <button type="button" class="remove-btn" onclick="removeLesson(this)">Xóa</button>
+              </div>
+              <div class="form-group">
+                  <label>Tiêu đề bài học</label>
+                  <input type="text" name="lessons[${lessonIndex}][title]" required>
+              </div>
+              <div class="form-group">
+                  <label>YouTube Video ID</label>
+                  <input type="text" name="lessons[${lessonIndex}][youtubeVideoId]" required>
+              </div>
+              <div class="form-group">
+                  <label>Thời lượng (phút)</label>
+                  <input type="number" name="lessons[${lessonIndex}][duration]" required>
+              </div>
+          `;
+          lessonsContainer.appendChild(lessonDiv);
+          lessonIndex++;
+      }
+
+      function removeLesson(button) {
+          button.closest('.lesson-item').remove();
+      }
+    </script>
+  </body>
 </html>
