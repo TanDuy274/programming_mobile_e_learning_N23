@@ -16,9 +16,11 @@
       td {
         border: 1px solid #ddd;
         padding: 8px;
+        vertical-align: middle;
       }
       th {
         background-color: #f2f2f2;
+        text-align: left;
       }
       nav a {
         margin-right: 15px;
@@ -29,6 +31,26 @@
       nav a.active {
         border-bottom: 2px solid blue;
       }
+      /* << CSS MỚI >> */
+      .avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+      }
+      .status-verified {
+        color: green;
+        font-weight: bold;
+      }
+      .status-pending {
+        color: orange;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -38,6 +60,8 @@
       <a href="/admin/users" class="active">Người dùng</a>
       <a href="/admin/enrollments">Ghi danh</a>
       <a href="/admin/reviews">Đánh giá</a>
+      <a href="/admin/projects">Dự án</a>
+      <a href="/admin/questions">Hỏi & Đáp</a>
     </nav>
 
     <h1>Danh sách Người dùng</h1>
@@ -59,15 +83,40 @@
           <th>Tên</th>
           <th>Email</th>
           <th>Vai trò</th>
+          <th>Headline</th>
+          <th>Đã xác thực?</th>
+          <th>Ngày tham gia</th>
           <th>Hành động</th>
         </tr>
       </thead>
       <tbody>
         <% users.forEach(user => { %>
         <tr>
-          <td><%= user.name %></td>
+          <td>
+            <div class="user-info">
+              <img
+                src="<%= user.avatar %>"
+                alt="<%= user.name %>"
+                class="avatar-img"
+              />
+              <span><%= user.name %></span>
+            </div>
+          </td>
           <td><%= user.email %></td>
           <td><%= user.role %></td>
+
+          <td><%= user.headline || 'N/A' %></td>
+
+          <td>
+            <% if (user.isVerified) { %>
+            <span class="status-verified">Đã xác thực</span>
+            <% } else { %>
+            <span class="status-pending">Chưa</span>
+            <% } %>
+          </td>
+
+          <td><%= user.createdAt.toLocaleDateString('vi-VN') %></td>
+
           <td>
             <a href="/admin/users/<%= user._id %>/edit">Sửa</a> |
             <a
