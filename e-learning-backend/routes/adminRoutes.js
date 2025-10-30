@@ -2,20 +2,19 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 
-// Import Models
 const Course = require("../models/CourseModel.js");
 const Category = require("../models/CategoryModel.js");
 const User = require("../models/UserModel.js");
-const Enrollment = require("../models/EnrollmentModel.js"); // << THÊM MỚI
-const Review = require("../models/ReviewModel.js"); // << THÊM MỚI
+const Enrollment = require("../models/EnrollmentModel.js");
+const Review = require("../models/ReviewModel.js");
+const Project = require("../models/ProjectModel.js");
+const Question = require("../models/QuestionModel.js");
 
-// --- MAIN ADMIN DASHBOARD ---
-// Chuyển hướng đến trang quản lý chính là courses
 router.get("/", (req, res) => {
   res.redirect("/admin/courses");
 });
 
-// --- QUẢN LÝ KHÓA HỌC ---
+//QUẢN LÝ KHÓA HỌC
 router.get("/courses", async (req, res) => {
   try {
     const courses = await Course.find()
@@ -36,7 +35,7 @@ router.get("/courses/:id/delete", async (req, res) => {
   }
 });
 
-// --- QUẢN LÝ DANH MỤC ---
+//QUẢN LÝ DANH MỤC
 router.get("/categories", async (req, res) => {
   try {
     const categories = await Category.find();
@@ -65,7 +64,7 @@ router.get("/categories/:id/delete", async (req, res) => {
   }
 });
 
-// --- QUẢN LÝ NGƯỜI DÙNG ---
+//QUẢN LÝ NGƯỜI DÙNG
 router.get("/users", async (req, res) => {
   try {
     const users = await User.find();
@@ -84,7 +83,7 @@ router.get("/users/:id/delete", async (req, res) => {
   }
 });
 
-// --- QUẢN LÝ GHI DANH (ENROLLMENTS) --- << MỚI
+//QUẢN LÝ GHI DANH (ENROLLMENTS)
 router.get("/enrollments", async (req, res) => {
   try {
     const enrollments = await Enrollment.find()
@@ -105,7 +104,7 @@ router.get("/enrollments/:id/delete", async (req, res) => {
   }
 });
 
-// --- QUẢN LÝ ĐÁNH GIÁ (REVIEWS) --- << MỚI
+//QUẢN LÝ ĐÁNH GIÁ (REVIEWS)
 router.get("/reviews", async (req, res) => {
   try {
     const reviews = await Review.find()
@@ -126,7 +125,6 @@ router.get("/reviews/:id/delete", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Hiển thị form sửa danh mục
 router.get("/categories/:id/edit", async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
@@ -136,7 +134,6 @@ router.get("/categories/:id/edit", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Xử lý cập nhật danh mục
 router.post("/categories/:id/edit", async (req, res) => {
   try {
     const { name } = req.body;
@@ -147,7 +144,6 @@ router.post("/categories/:id/edit", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Hiển thị form tạo khóa học mới
 router.get("/courses/new", async (req, res) => {
   try {
     const categories = await Category.find();
@@ -158,39 +154,72 @@ router.get("/courses/new", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Xử lý tạo khóa học mới
 router.post("/courses/new", async (req, res) => {
   try {
-    const { title, description, price, instructor, category } = req.body;
-    await Course.create({ title, description, price, instructor, category });
+    const { title, description, price, instructor, category, thumbnail } =
+      req.body;
+
+    let lessons = [];
+    if (req.body.lessons) {
+      lessons = req.body.lessons.filter(
+        (lesson) => lesson.title && lesson.youtubeVideoId && lesson.duration
+      );
+    }
+
+    await Course.create({
+      title,
+      description,
+      price,
+      instructor,
+      category,
+      thumbnail,
+      lessons,
+    });
     res.redirect("/admin/courses");
   } catch (error) {
     res.send("Lỗi khi tạo khóa học");
   }
 });
 
-// ROUTE MỚI: Hiển thị form sửa khóa học
 router.get("/courses/:id/edit", async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
-    const categories = await Category.find();
-    const teachers = await User.find({ role: "teacher" });
+    const course = await Course.findById(req.params.id)
+      .populate("instructor", "name")
+      .populate("category", "name");
+
+    if (!course) {
+      return res.send("Không tìm thấy khóa học");
+    }
+
+    const teachers = await User.find({ role: "teacher" }).select("name");
+    const categories = await Category.find().select("name");
+
     res.render("edit-course", { course, categories, teachers });
   } catch (error) {
+    console.error("Lỗi khi tải form sửa khóa học:", error);
     res.send("Lỗi tải dữ liệu cho form sửa");
   }
 });
 
-// ROUTE MỚI: Xử lý cập nhật khóa học
 router.post("/courses/:id/edit", async (req, res) => {
   try {
-    const { title, description, price, instructor, category } = req.body;
+    const { title, description, price, instructor, category, thumbnail } =
+      req.body;
+
+    let lessons = [];
+    if (req.body.lessons) {
+      lessons = req.body.lessons.filter(
+        (lesson) => lesson.title && lesson.youtubeVideoId && lesson.duration
+      );
+    }
     await Course.findByIdAndUpdate(req.params.id, {
       title,
       description,
       price,
       instructor,
       category,
+      thumbnail,
+      lessons,
     });
     res.redirect("/admin/courses");
   } catch (error) {
@@ -198,32 +227,42 @@ router.post("/courses/:id/edit", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Hiển thị form tạo người dùng mới
 router.get("/users/new", (req, res) => {
   res.render("new-user");
 });
 
-// ROUTE MỚI: Xử lý tạo người dùng mới
 router.post("/users/new", async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, headline } = req.body;
 
-    // 1. Kiểm tra xem mật khẩu có được cung cấp không
+    const isVerified = req.body.isVerified === "on"; // Chuyển 'on' thành true
+    const avatar = req.body.avatar || undefined; // Nếu avatar trống, để 'undefined' để model dùng default
+
+    //Kiểm tra mật khẩu
     if (!password) {
       return res.send("Vui lòng cung cấp mật khẩu");
     }
 
-    // 2. Mã hóa mật khẩu
-    const salt = await bcrypt.genSalt(10); // << Bỏ comment dòng này
-    const hashedPassword = await bcrypt.hash(password, salt); // << Bỏ comment dòng này
+    //Mã hóa mật khẩu
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 3. Tạo người dùng với mật khẩu đã mã hóa
-    await User.create({
+    //Tạo đối tượng user mới
+    const newUser = {
       name,
       email,
-      password: hashedPassword, // << Sử dụng mật khẩu đã mã hóa
+      password: hashedPassword,
       role,
-    });
+      headline,
+      isVerified,
+    };
+
+    if (avatar) {
+      newUser.avatar = avatar; // Chỉ thêm avatar nếu được cung cấp
+    }
+
+    //Tạo người dùng
+    await User.create(newUser);
 
     res.redirect("/admin/users");
   } catch (error) {
@@ -231,7 +270,6 @@ router.post("/users/new", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Hiển thị form sửa người dùng
 router.get("/users/:id/edit", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -241,20 +279,34 @@ router.get("/users/:id/edit", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Xử lý cập nhật người dùng
 router.post("/users/:id/edit", async (req, res) => {
   try {
-    const { name, email, role } = req.body;
-    await User.findByIdAndUpdate(req.params.id, { name, email, role });
+    const { name, email, role, headline, avatar, password } = req.body;
+    const isVerified = req.body.isVerified === "on"; // Chuyển 'on' (từ checkbox) thành true
+
+    const updateData = {
+      name,
+      email,
+      role,
+      headline,
+      avatar,
+      isVerified,
+    };
+
+    //Chỉ cập nhật mật khẩu nếu admin nhập mật khẩu mới
+    if (password && password.length > 0) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
+    //Cập nhật người dùng
+    await User.findByIdAndUpdate(req.params.id, updateData);
     res.redirect("/admin/users");
   } catch (error) {
-    res.send("Lỗi khi cập nhật người dùng");
+    res.send("Lỗi khi cập nhật người dùng (có thể do trùng email)");
   }
 });
 
-// --- QUẢN LÝ GHI DANH (ENROLLMENTS) ---
-
-// ROUTE MỚI: Hiển thị form tạo ghi danh mới
 router.get("/enrollments/new", async (req, res) => {
   try {
     const users = await User.find({ role: "student" });
@@ -265,7 +317,6 @@ router.get("/enrollments/new", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Xử lý tạo ghi danh mới
 router.post("/enrollments/new", async (req, res) => {
   try {
     const { user, course } = req.body;
@@ -276,9 +327,6 @@ router.post("/enrollments/new", async (req, res) => {
   }
 });
 
-// --- QUẢN LÝ ĐÁNH GIÁ (REVIEWS) ---
-
-// ROUTE MỚI: Hiển thị form tạo đánh giá mới
 router.get("/reviews/new", async (req, res) => {
   try {
     const users = await User.find();
@@ -289,7 +337,6 @@ router.get("/reviews/new", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Xử lý tạo đánh giá mới
 router.post("/reviews/new", async (req, res) => {
   try {
     const { user, course, rating, comment } = req.body;
@@ -300,7 +347,6 @@ router.post("/reviews/new", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Hiển thị form sửa ghi danh
 router.get("/enrollments/:id/edit", async (req, res) => {
   try {
     const enrollment = await Enrollment.findById(req.params.id);
@@ -312,18 +358,20 @@ router.get("/enrollments/:id/edit", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Xử lý cập nhật ghi danh
 router.post("/enrollments/:id/edit", async (req, res) => {
   try {
-    const { user, course } = req.body;
-    await Enrollment.findByIdAndUpdate(req.params.id, { user, course });
+    const { user, course, progress } = req.body;
+    await Enrollment.findByIdAndUpdate(req.params.id, {
+      user,
+      course,
+      progress,
+    });
     res.redirect("/admin/enrollments");
   } catch (error) {
     res.send("Lỗi khi cập nhật ghi danh");
   }
 });
 
-// ROUTE MỚI: Hiển thị form sửa đánh giá
 router.get("/reviews/:id/edit", async (req, res) => {
   try {
     const review = await Review.findById(req.params.id);
@@ -333,7 +381,6 @@ router.get("/reviews/:id/edit", async (req, res) => {
   }
 });
 
-// ROUTE MỚI: Xử lý cập nhật đánh giá
 router.post("/reviews/:id/edit", async (req, res) => {
   try {
     const { rating, comment } = req.body;
@@ -341,6 +388,46 @@ router.post("/reviews/:id/edit", async (req, res) => {
     res.redirect("/admin/reviews");
   } catch (error) {
     res.send("Lỗi khi cập nhật đánh giá");
+  }
+});
+
+router.get("/projects", async (req, res) => {
+  try {
+    const projects = await Project.find()
+      .populate("user", "name")
+      .populate("course", "title");
+    res.render("projects", { projects: projects });
+  } catch (error) {
+    res.send("Lỗi khi tải danh sách dự án");
+  }
+});
+
+router.get("/projects/:id/delete", async (req, res) => {
+  try {
+    await Project.findByIdAndDelete(req.params.id);
+    res.redirect("/admin/projects");
+  } catch (error) {
+    res.send("Lỗi khi xóa dự án");
+  }
+});
+
+router.get("/questions", async (req, res) => {
+  try {
+    const questions = await Question.find()
+      .populate("user", "name")
+      .populate("course", "title");
+    res.render("questions", { questions: questions });
+  } catch (error) {
+    res.send("Lỗi khi tải danh sách câu hỏi");
+  }
+});
+
+router.get("/questions/:id/delete", async (req, res) => {
+  try {
+    await Question.findByIdAndDelete(req.params.id);
+    res.redirect("/admin/questions");
+  } catch (error) {
+    res.send("Lỗi khi xóa câu hỏi");
   }
 });
 
