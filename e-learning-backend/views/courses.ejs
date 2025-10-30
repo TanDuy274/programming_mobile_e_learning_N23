@@ -8,32 +8,32 @@
         font-family: sans-serif;
         margin: 40px;
       }
-
       table {
         width: 100%;
         border-collapse: collapse;
       }
-
       th,
       td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
+        vertical-align: top;
       }
-
       th {
         background-color: #f2f2f2;
       }
-
       nav a {
         margin-right: 15px;
         text-decoration: none;
         color: blue;
         padding-bottom: 5px;
       }
-
       nav a.active {
         border-bottom: 2px solid blue;
+      }
+      .youtube-id-list {
+        word-break: break-all;
+        line-height: 1.5;
       }
     </style>
   </head>
@@ -45,6 +45,8 @@
       <a href="/admin/users">Người dùng</a>
       <a href="/admin/enrollments">Ghi danh</a>
       <a href="/admin/reviews">Đánh giá</a>
+      <a href="/admin/projects">Dự án</a>
+      <a href="/admin/questions">Hỏi & Đáp</a>
     </nav>
 
     <h1>Danh sách Khóa học</h1>
@@ -67,6 +69,7 @@
           <th>Giảng viên</th>
           <th>Danh mục</th>
           <th>Giá</th>
+          <th>Youtube IDs (Tất cả)</th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -77,6 +80,14 @@
           <td><%= course.instructor ? course.instructor.name : 'N/A' %></td>
           <td><%= course.category ? course.category.name : 'N/A' %></td>
           <td>$<%= course.price %></td>
+
+          <td class="youtube-id-list">
+            <% if (course.lessons && course.lessons.length > 0) { %> <%
+            course.lessons.forEach(lesson => { %>
+            <span><%= lesson.youtubeVideoId %></span><br />
+            <% }) %> <% } else { %> N/A <% } %>
+          </td>
+
           <td>
             <a href="/admin/courses/<%= course._id %>/edit">Sửa</a> |
             <a
