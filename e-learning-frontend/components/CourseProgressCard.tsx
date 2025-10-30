@@ -43,16 +43,16 @@ const CourseProgressCard = ({
             {formatDuration(totalDurationMinutes)}
           </Text>
         </View>
-        <View className="mt-2">
+        <View className="mt-2 gap-2">
+          <Text className="text-xs text-gray-500 mt-1">
+            {progress}% Complete
+          </Text>
           <View className="w-full bg-[#B7F3FD] rounded-full h-1.5">
             <View
               className="bg-[#55BAD3] h-1.5 rounded-full"
               style={{ width: `${progress}%` }}
             />
           </View>
-          <Text className="text-xs text-gray-500 mt-1">
-            {progress}% Complete
-          </Text>
         </View>
       </View>
     </TouchableOpacity>
