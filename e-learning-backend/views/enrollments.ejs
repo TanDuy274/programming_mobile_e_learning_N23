@@ -38,6 +38,8 @@
       <a href="/admin/users">Người dùng</a>
       <a href="/admin/enrollments" class="active">Ghi danh</a>
       <a href="/admin/reviews">Đánh giá</a>
+      <a href="/admin/projects">Dự án</a>
+      <a href="/admin/questions">Hỏi & Đáp</a>
     </nav>
 
     <h1>Danh sách Ghi danh</h1>
@@ -59,6 +61,7 @@
           <th>Học viên</th>
           <th>Khóa học đã đăng ký</th>
           <th>Ngày ghi danh</th>
+          <th>Tiến độ (%)</th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -70,6 +73,7 @@
           <td>
             <%= new Date(enrollment.createdAt).toLocaleDateString('vi-VN') %>
           </td>
+          <td><%= enrollment.progress %>%</td>
           <td>
             <a href="/admin/enrollments/<%= enrollment._id %>/edit">Sửa</a> |
             <a
