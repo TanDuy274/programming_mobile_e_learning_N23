@@ -1,11 +1,24 @@
 // Ví dụ: src/screens/SearchScreen.tsx
+import { AuthContext } from "@/context/AuthContext";
+import { useRouter } from "expo-router";
 import React, { useContext } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AuthContext } from "../context/AuthContext";
 
 const ProfileScreen = () => {
   const { logout } = useContext(AuthContext);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Gọi hàm logout từ context
+      // SAU KHI LOGOUT XONG, chuyển hướng về login
+      router.replace("/(auth)/login"); // Dùng replace để xóa stack cũ
+    } catch (error) {
+      console.error("Error during logout navigation:", error);
+      // Có thể thêm Toast báo lỗi nếu cần
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -14,7 +27,7 @@ const ProfileScreen = () => {
 
         <TouchableOpacity
           className="bg-red-500 w-full p-4 rounded-lg items-center"
-          onPress={() => logout()}
+          onPress={handleLogout}
         >
           <Text className="text-white text-lg font-bold">Đăng xuất</Text>
         </TouchableOpacity>

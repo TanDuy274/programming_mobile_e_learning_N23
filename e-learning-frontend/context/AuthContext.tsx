@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import * as SecureStore from "expo-secure-store";
-import api from "../api/api"; // << ĐÃ SỬA LỖI
+import api from "../api/api";
 
 // Định nghĩa kiểu cho thông tin người dùng
 interface UserInfo {
