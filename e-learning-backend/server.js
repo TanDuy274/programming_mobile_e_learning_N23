@@ -7,6 +7,10 @@ const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const enrollmentRoutes = require("./routes/enrollmentRoutes");
+const userRoutes = require("./routes/userRoutes.js");
+const questionRoutes = require("./routes/questionRoutes.js");
+const projectRoutes = require("./routes/projectRoutes.js");
+const bodyParser = require("body-parser");
 
 const path = require("path"); // Cần cho EJS
 const { fileURLToPath } = require("url"); // Cần cho EJS
@@ -20,6 +24,8 @@ connectDB();
 
 // Khởi tạo app Express
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // --- Cấu hình EJS ---
 app.set("views", path.join(__dirname, "views")); // Dùng __dirname trực tiếp
@@ -42,6 +48,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/projects", projectRoutes);
 
 // Lấy PORT từ biến môi trường, nếu không có thì mặc định là 5000
 const PORT = process.env.PORT || 5001;
