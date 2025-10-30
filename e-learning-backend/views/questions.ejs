@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Quản lý Hỏi & Đáp</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 40px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      nav a {
+        margin-right: 15px;
+        text-decoration: none;
+        color: blue;
+        padding-bottom: 5px;
+      }
+      nav a.active {
+        border-bottom: 2px solid blue;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/admin/courses">Khóa học</a>
+      <a href="/admin/categories">Danh mục</a>
+      <a href="/admin/users">Người dùng</a>
+      <a href="/admin/enrollments">Ghi danh</a>
+      <a href="/admin/reviews">Đánh giá</a>
+      <a href="/admin/projects">Dự án</a>
+      <a href="/admin/questions" class="active">Hỏi & Đáp</a>
+    </nav>
+
+    <h1>Danh sách Hỏi & Đáp</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Người hỏi</th>
+          <th>Khóa học</th>
+          <th>Nội dung câu hỏi</th>
+          <th>Ngày tạo</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% questions.forEach(question => { %>
+        <tr>
+          <td><%= question.user ? question.user.name : 'N/A' %></td>
+          <td><%= question.course ? question.course.title : 'N/A' %></td>
+          <td style="max-width: 400px; white-space: pre-wrap">
+            <%= question.text %>
+          </td>
+          <td>
+            <%= question.createdAt ? new
+            Date(question.createdAt).toLocaleDateString('vi-VN') : 'N/A' %>
+          </td>
+          <td>
+            <a
+              href="/admin/questions/<%= question._id %>/delete"
+              onclick="return confirm('Bạn chắc chắn muốn xóa?')"
+              >Xóa</a
+            >
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>
