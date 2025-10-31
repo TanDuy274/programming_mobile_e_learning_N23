@@ -2,13 +2,14 @@ import api from "@/api/api";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import { AuthContext } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
   Image,
   ScrollView,
+  StatusBar,
   Text,
   TouchableOpacity,
   useWindowDimensions,
@@ -193,6 +194,13 @@ const CourseDetailScreen = () => {
     { key: "lessons", title: "LESSONS" },
     { key: "review", title: "REVIEW" },
   ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBackgroundColor("#FFFFFF");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
 
   useEffect(() => {
     const fetchCourseDetail = async () => {
