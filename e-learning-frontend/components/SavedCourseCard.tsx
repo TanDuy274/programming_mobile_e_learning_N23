@@ -62,6 +62,9 @@ const SavedCourseCard = memo(
               {title}
             </Text>
             <Text className="text-sm text-gray-500 mt-1">{instructor}</Text>
+            <Text className="text-lg font-bold text-[#55BAD3] mt-1">
+              ${price.toFixed(2)}
+            </Text>
             <View className="flex-row items-center mt-1">
               <Ionicons name="star" size={14} color="#FBBF24" />
               <Text className="text-xs text-gray-500 ml-1">
@@ -71,9 +74,6 @@ const SavedCourseCard = memo(
                 {lessonsCount} lessons
               </Text>
             </View>
-            <Text className="text-lg font-bold text-[#55BAD3] mt-1">
-              ${price.toFixed(2)}
-            </Text>
           </View>
 
           {/* Nút Bookmark (bên phải cùng) */}

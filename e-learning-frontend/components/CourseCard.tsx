@@ -14,6 +14,7 @@ type CourseCardProps = {
   imageUrl?: string;
   isBestseller?: boolean;
   layout?: "horizontal" | "vertical";
+  lessonsCount: number;
 };
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/256x144";
@@ -29,6 +30,7 @@ const CourseCard = memo(
     imageUrl = FALLBACK_IMAGE,
     isBestseller = false,
     layout = "horizontal",
+    lessonsCount,
   }: CourseCardProps) => {
     const router = useRouter();
     const isHorizontal = layout === "horizontal";
@@ -84,17 +86,20 @@ const CourseCard = memo(
 
             <Text className="text-sm text-gray-500 mt-1">{instructor}</Text>
 
+            <Text className="text-xl font-bold text-[#55BAD3] mt-2">
+              ${price.toFixed(2)}
+            </Text>
+
             <View className="flex-row items-center mt-2">
               <Text className="text-yellow-500 font-bold mr-1">
                 {rating?.toFixed(1) ?? "0.0"}
               </Text>
               <Ionicons name="star" size={16} color="#FBBF24" />
               <Text className="text-xs text-gray-400 ml-2">({reviews})</Text>
+              <Text className="text-xs text-gray-500 ml-2">
+                {lessonsCount} lessons
+              </Text>
             </View>
-
-            <Text className="text-xl font-bold text-[#55BAD3] mt-2">
-              ${price.toFixed(2)}
-            </Text>
           </View>
         </View>
       </TouchableOpacity>
