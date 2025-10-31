@@ -246,8 +246,8 @@ const HomeScreen = () => {
                 <Text className="text-[#55BAD3] font-medium">View more</Text>
               </TouchableOpacity>
             </View>
-            <FlatList
-              data={courses}
+            {/* <FlatList
+              data={courses.slice(0, 3)}
               // horizontal
               // showsHorizontalScrollIndicator={false}
               keyExtractor={(item: Course) => item._id}
@@ -263,7 +263,22 @@ const HomeScreen = () => {
                   lessonsCount={item.lessons.length}
                 />
               )}
-            />
+            /> */}
+            <View>
+              {courses.slice(0, 3).map((item: Course) => (
+                <SavedCourseCard
+                  key={item._id}
+                  id={item._id}
+                  title={item.title}
+                  instructor={item.instructor?.name || "N/A"}
+                  price={item.price}
+                  rating={item.rating}
+                  reviews={item.reviewCount}
+                  imageUrl={item.thumbnail}
+                  lessonsCount={item.lessons.length}
+                />
+              ))}
+            </View>
           </View>
 
           {/* --- Top Teachers --- */}
