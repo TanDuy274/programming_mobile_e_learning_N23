@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Platform,
   Image,
+  StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,7 +20,7 @@ import { useFetchData } from "@/hooks/useFetchData";
 import CategoryCard from "@/components/CategoryCard";
 import CourseCard from "@/components/CourseCard";
 import TeacherCard from "@/components/TeacherCard";
-import { StatusBar } from "expo-status-bar";
+// import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
 import SavedCourseCard from "@/components/SavedCourseCard";
 import { Lesson } from "@/types";
@@ -52,6 +53,8 @@ const HomeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      StatusBar.setBackgroundColor("#55BAD3");
+      StatusBar.setBarStyle("light-content");
       fetchCart();
       fetchEnrollments();
       fetchUserInfo();
@@ -83,7 +86,7 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["left", "right"]}>
-      <StatusBar backgroundColor="#55BAD3" style="light" />
+      {/* <StatusBar backgroundColor="#55BAD3" style="light" /> */}
       {/* --- Header --- */}
       <View
         className="flex-row items-center justify-between p-5 bg-[#55BAD3]"

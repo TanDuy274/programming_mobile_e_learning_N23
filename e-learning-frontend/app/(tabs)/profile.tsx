@@ -1,13 +1,20 @@
 // Ví dụ: src/screens/SearchScreen.tsx
 import { AuthContext } from "@/context/AuthContext";
-import { useRouter } from "expo-router";
-import React, { useContext } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useContext } from "react";
+import { View, Text, TouchableOpacity, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ProfileScreen = () => {
   const { logout } = useContext(AuthContext);
   const router = useRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBackgroundColor("#FFFFFF");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
 
   const handleLogout = async () => {
     try {
