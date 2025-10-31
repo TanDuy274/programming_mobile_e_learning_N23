@@ -6,6 +6,7 @@ import { MenuProvider } from "react-native-popup-menu";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "@/context/AuthContext";
 import "../global.css";
+import { toastConfig } from "@/components/CustomToast";
 
 // Font setup (Nếu bạn dùng custom font với expo-font)
 // import { useFonts } from 'expo-font';
@@ -50,7 +51,7 @@ export default function RootLayout() {
 
             {/* Các nhóm (auth), (tabs) sẽ có layout riêng */}
           </Stack>
-          <Toast />
+          <Toast config={toastConfig} />
         </AuthProvider>
       </MenuProvider>
     </SafeAreaProvider>
