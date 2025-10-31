@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
 import api from "@/api/api";
 import { Lesson } from "@/types";
@@ -56,6 +55,8 @@ const categoryDetails: {
 
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Course[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [recommended, setRecommended] = useState<Course[]>([]);
 
@@ -106,34 +107,55 @@ const SearchScreen = () => {
     []
   );
 
-  return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
-      {/* <StatusBar style="dark" /> */}
-      {/* Search Bar */}
-      <View className="p-5 flex-row items-center gap-x-3 border-b border-gray-200">
-        <View className="flex-1 flex-row items-center bg-gray-100 rounded-lg p-3">
-          <Ionicons name="search" size={20} color="gray" />
-          <TextInput
-            placeholder="Search course"
-            className="flex-1 ml-3 text-lg"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            autoCorrect={false}
-            autoCapitalize="none"
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={clearSearch} className="p-1">
-              <Ionicons name="close-circle" size={22} color="gray" />
-            </TouchableOpacity>
-          )}
-        </View>
-        <TouchableOpacity className="bg-[#55BAD3] p-3 rounded-lg">
-          <Ionicons name="options-outline" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
+  // Logic tìm kiếm (debounce 500ms)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (searchQuery.trim().length > 1) {
+        handleSearch(searchQuery);
+      } else {
+        setSearchResults([]);
+      }
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
-      {/* Nội dung chính */}
+  const handleSearch = useCallback(async (query: string) => {
+    setIsSearching(true);
+    try {
+      const res = await api.get("/courses/search", {
+        params: { keyword: query },
+      });
+      setSearchResults(res.data || []);
+    } catch (err) {
+      console.error("Search failed:", err);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  //Render từng item Course
+  const renderCourseItem = useCallback(
+    ({ item }: { item: Course }) => (
+      <CourseCard
+        layout="vertical"
+        id={item._id}
+        title={item.title}
+        instructor={item.instructor?.name}
+        price={item.price}
+        rating={item.rating}
+        reviews={item.reviewCount}
+        imageUrl={item.thumbnail}
+        lessonsCount={item.lessons.length}
+      />
+    ),
+    []
+  );
+
+  //khi chưa tìm kiếm
+  const renderInitialView = useMemo(
+    () => (
       <FlatList
+        className="flex-1"
         data={categories}
         keyExtractor={(item) => item._id}
         renderItem={renderCategoryItem}
@@ -207,6 +229,71 @@ const SearchScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 60 }}
       />
+    ),
+    [categories, recommended, renderCategoryItem]
+  );
+
+  return (
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+      {/* Search Bar */}
+      <View className="p-5 flex-row items-center gap-x-3 border-b border-gray-200">
+        <View className="flex-1 flex-row items-center bg-gray-100 rounded-lg p-3">
+          <Ionicons name="search" size={20} color="gray" />
+          <TextInput
+            placeholder="Search course"
+            className="flex-1 ml-3 text-[16px] py-1"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={clearSearch} className="p-1">
+              <Ionicons name="close-circle" size={22} color="gray" />
+            </TouchableOpacity>
+          )}
+        </View>
+        <TouchableOpacity className="bg-[#55BAD3] p-3 rounded-lg">
+          <Ionicons name="options-outline" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Nội dung chính */}
+      {searchQuery.trim().length > 1 ? (
+        isSearching ? (
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator
+              size="large"
+              color="#4F46E5"
+              style={{ marginTop: 80 }}
+            />
+          </View>
+        ) : (
+          <FlatList
+            className="flex-1"
+            data={searchResults}
+            keyExtractor={(item) => item._id}
+            renderItem={renderCourseItem}
+            ListEmptyComponent={
+              <EmptyState
+                icon="search-circle-outline"
+                message={`Không tìm thấy kết quả cho "${searchQuery}"`}
+              />
+            }
+            contentContainerStyle={{
+              padding: 16,
+              flexGrow: 1,
+              justifyContent:
+                searchResults.length === 0 ? "center" : "flex-start",
+            }}
+            initialNumToRender={5}
+            windowSize={5}
+            removeClippedSubviews
+          />
+        )
+      ) : (
+        renderInitialView
+      )}
     </SafeAreaView>
   );
 };
