@@ -3,13 +3,14 @@ import CourseCard from "@/components/CourseCard";
 import EmptyState from "@/components/EmptyState";
 import { AuthContext } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
+  StatusBar,
   Text,
   TouchableOpacity,
   useWindowDimensions,
@@ -72,6 +73,13 @@ const TeacherProfileScreen = () => {
 
   const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBackgroundColor("#FFFFFF");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
 
   useEffect(() => {
     const fetchTeacherData = async () => {
