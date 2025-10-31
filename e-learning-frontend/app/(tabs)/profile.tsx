@@ -13,7 +13,14 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from "react-native-popup-menu";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -81,10 +88,47 @@ const ProfileScreen = () => {
     // Use SafeAreaView only for top inset, remove bottom padding
     <SafeAreaView className="flex-1 bg-white" edges={["left", "right", "top"]}>
       {/* --- Custom Header --- */}
-      <View className="flex-row items-center justify-between px-4 py-4 bg-white">
+      <View className="flex-row items-center justify-between px-4 py-4 bg-white border-b border-gray-200">
         <View className="w-8" />
         <Text className="text-xl font-bold text-gray-800">User's profile</Text>
-        <Ionicons name="ellipsis-vertical" size={26} color="black" />
+
+        <Menu>
+          <MenuTrigger>
+            <Ionicons name="ellipsis-vertical" size={26} color="black" />
+          </MenuTrigger>
+          <MenuOptions
+            customStyles={{
+              optionsContainer: {
+                borderRadius: 12,
+                paddingVertical: 4,
+                backgroundColor: "#FFFFFF",
+                shadowColor: "#000",
+                shadowOpacity: 0.1,
+                shadowRadius: 6,
+                elevation: 5,
+                marginTop: 30,
+                width: 160,
+              },
+            }}
+          >
+            <MenuOption onSelect={() => router.push("/editProfile")}>
+              <View className="flex-row items-center px-4 py-3 rounded-lg">
+                <Ionicons name="create-outline" size={20} color="#4F46E5" />
+                <Text className="ml-3 text-base text-gray-700 font-medium">
+                  Edit name
+                </Text>
+              </View>
+            </MenuOption>
+            <MenuOption onSelect={handleLogout}>
+              <View className="flex-row items-center px-4 py-3 rounded-lg">
+                <Ionicons name="log-out-outline" size={20} color="red" />
+                <Text className="ml-3 text-base text-red-500 font-medium">
+                  Logout
+                </Text>
+              </View>
+            </MenuOption>
+          </MenuOptions>
+        </Menu>
       </View>
 
       <ScrollView
@@ -92,7 +136,7 @@ const ProfileScreen = () => {
         className="flex-1 bg-gray-50"
       >
         {/* --- Banner & Avatar Section --- */}
-        <View className="bg-white">
+        <View className="">
           <Image
             source={{
               uri: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071",
@@ -112,7 +156,7 @@ const ProfileScreen = () => {
         </View>
 
         {/* --- User Info Section --- */}
-        <View className="items-center px-5 bg-white pt-4 pb-6">
+        <View className="items-center px-5  pt-4 pb-6">
           <Text className="text-2xl font-bold text-gray-800 text-center">
             {userInfo?.name}
           </Text>
@@ -124,7 +168,7 @@ const ProfileScreen = () => {
 
         {/* --- Stats Section --- */}
         {/* Add background color and padding */}
-        <View className="flex-row py-6 bg-white border-t border-b border-gray-100">
+        <View className="flex-row bg-white mx-4 rounded-2xl shadow-sm py-5 mb-6">
           <View className="flex-1 items-center">
             <Text className="text-2xl font-bold text-gray-800">
               {savedCourses.length}
