@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,7 @@ import api from "../api/api";
 import Toast from "react-native-toast-message";
 import EmptyState from "../components/EmptyState";
 import { AuthContext } from "../context/AuthContext";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 interface CourseInCart {
   _id: string;
@@ -35,6 +36,13 @@ const CartScreen = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedTotalPrice, setSelectedTotalPrice] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBackgroundColor("#FFFFFF");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
 
   const fetchCartItems = useCallback(async () => {
     try {
