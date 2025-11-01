@@ -105,7 +105,7 @@ const RegisterScreen = () => {
 
               {/* --- NAME INPUT --- */}
               <TextInput
-                className={`bg-gray-100 p-4 rounded-lg text-lg border ${errors.name ? "border-red-500" : "border-gray-200"}`}
+                className={`bg-gray-100 p-4 rounded-lg text-[16px] border ${errors.name ? "border-red-500" : "border-gray-200"}`}
                 placeholder="Tên của bạn"
                 value={name}
                 onChangeText={setName}
@@ -121,7 +121,7 @@ const RegisterScreen = () => {
 
               {/* --- EMAIL INPUT --- */}
               <TextInput
-                className={`bg-gray-100 p-4 rounded-lg text-lg border ${errors.email ? "border-red-500" : "border-gray-200"}`}
+                className={`bg-gray-100 p-4 rounded-lg text-[16px] border ${errors.email ? "border-red-500" : "border-gray-200"}`}
                 placeholder="Email của bạn"
                 value={email}
                 onChangeText={setEmail}
@@ -136,7 +136,7 @@ const RegisterScreen = () => {
 
               {/* --- PASSWORD INPUT --- */}
               <TextInput
-                className={`bg-gray-100 p-4 rounded-lg text-lg border ${errors.password ? "border-red-500" : "border-gray-200"}`}
+                className={`bg-gray-100 p-4 rounded-lg text-[16px] border ${errors.password ? "border-red-500" : "border-gray-200"}`}
                 placeholder="Mật khẩu"
                 value={password}
                 onChangeText={setPassword}
