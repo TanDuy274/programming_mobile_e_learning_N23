@@ -82,9 +82,12 @@ const MyCoursesScreen = () => {
     { key: "completed", title: "COMPLETED" },
   ]);
 
-  const fetchMyCourses = async () => {
+  const fetchMyCourses = async (isPullToRefresh = false) => {
     try {
-      setIsLoading(true);
+      if (!isPullToRefresh) {
+        setIsLoading(true);
+      }
+
       const response = await api.get("/enrollments/my-courses");
       setEnrollments(response.data);
     } catch (error) {
@@ -104,13 +107,13 @@ const MyCoursesScreen = () => {
       StatusBar.setBackgroundColor("#FFFFFF");
       StatusBar.setBarStyle("dark-content");
 
-      fetchMyCourses();
+      fetchMyCourses(false);
     }, [])
   );
 
   const onRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchMyCourses();
+    fetchMyCourses(true);
   }, []);
 
   const ongoingCourses = enrollments.filter((e) => e.progress < 100);
