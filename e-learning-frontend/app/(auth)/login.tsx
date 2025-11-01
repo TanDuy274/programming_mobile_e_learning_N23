@@ -76,7 +76,7 @@ const LoginScreen = () => {
               </Text>
 
               <TextInput
-                className="bg-gray-100 p-4 rounded-lg text-lg mb-4 border border-gray-200"
+                className="bg-gray-100 p-4 rounded-lg text-[16px] mb-4 border border-gray-200"
                 placeholder="Email của bạn"
                 value={email}
                 onChangeText={setEmail}
@@ -84,7 +84,7 @@ const LoginScreen = () => {
                 autoCapitalize="none"
               />
               <TextInput
-                className="bg-gray-100 p-4 rounded-lg text-lg mb-6 border border-gray-200"
+                className="bg-gray-100 p-4 rounded-lg text-[16px] mb-6 border border-gray-200"
                 placeholder="Mật khẩu"
                 value={password}
                 onChangeText={setPassword}
