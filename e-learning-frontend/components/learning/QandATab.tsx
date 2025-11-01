@@ -117,12 +117,12 @@ const QandATab = ({ courseId }: { courseId: string }) => {
         <TouchableOpacity
           onPress={handleSubmitQuestion}
           disabled={isSubmitting}
-          className="bg-[#55BAD3] p-3 rounded-lg items-center mt-3"
+          className="bg-[#55BAD3] p-4 rounded-lg items-center mt-3"
         >
           {isSubmitting ? (
             <ActivityIndicator color="white" />
           ) : (
-            <Text className="text-white font-bold">Send question</Text>
+            <Text className="text-white font-bold text-lg">Send question</Text>
           )}
         </TouchableOpacity>
       </View>
