@@ -62,18 +62,18 @@ const CoursesScreen = () => {
 
   // tiêu đề
   const title = useMemo(() => {
-    if (categoryName) return `Khóa học: ${categoryName}`;
-    if (featuredOnly) return "Khóa học nổi bật";
+    if (categoryName) return `Course: ${categoryName}`;
+    if (featuredOnly) return "Featured Courses";
     switch (sort) {
       case "popular":
-        return "Khóa học phổ biến";
+        return "Popular Courses";
       case "priceAsc":
-        return "Giá tăng dần";
+        return "Price: Low to High";
       case "priceDesc":
-        return "Giá giảm dần";
+        return "Price: High to Low";
       case "newest":
       default:
-        return "Tất cả khóa học";
+        return "All Courses";
     }
   }, [categoryName, featuredOnly, sort]);
 
@@ -103,7 +103,7 @@ const CoursesScreen = () => {
 
         setHasNext(!!res.data?.hasNextPage);
       } catch (err) {
-        console.error("Lỗi tải khóa học:", err);
+        console.error("Error loading courses:", err);
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
@@ -169,7 +169,7 @@ const CoursesScreen = () => {
           </Text>
           {item.totalDurationMinutes ? (
             <Text className="text-gray-500 text-sm">
-              ⏱ {item.totalDurationMinutes} phút
+              ⏱ {item.totalDurationMinutes} minutes
             </Text>
           ) : null}
         </View>
@@ -181,7 +181,7 @@ const CoursesScreen = () => {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#55BAD3" />
-        <Text className="mt-3 text-gray-500">Đang tải khóa học...</Text>
+        <Text className="mt-3 text-gray-500">Loading courses...</Text>
       </SafeAreaView>
     );
   }
@@ -213,12 +213,12 @@ const CoursesScreen = () => {
           <Ionicons name="swap-vertical-outline" size={16} color="#555" />
           <Text className="ml-1 text-gray-700 text-sm">
             {sort === "newest"
-              ? "Mới nhất"
+              ? "Newest"
               : sort === "popular"
-                ? "Phổ biến"
+                ? "Popular"
                 : sort === "priceAsc"
-                  ? "Giá tăng"
-                  : "Giá giảm"}
+                  ? "Price: Low to High"
+                  : "Price: High to Low"}
           </Text>
         </TouchableOpacity>
 
@@ -244,7 +244,7 @@ const CoursesScreen = () => {
               featuredOnly ? "text-white font-semibold" : "text-gray-700"
             }`}
           >
-            Nổi bật
+            Featured
           </Text>
         </TouchableOpacity>
 
@@ -255,7 +255,7 @@ const CoursesScreen = () => {
             className="flex-row items-center px-3 py-1.5 border border-gray-300 rounded-full bg-gray-50"
           >
             <Ionicons name="close-circle-outline" size={16} color="#555" />
-            <Text className="ml-1 text-gray-700 text-sm">Xoá lọc</Text>
+            <Text className="ml-1 text-gray-700 text-sm">Clear Filters</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -279,7 +279,7 @@ const CoursesScreen = () => {
           <View className="py-16 items-center">
             <Ionicons name="library-outline" size={36} />
             <Text className="mt-2 text-gray-500">
-              Không có khóa học phù hợp
+              No matching courses found
             </Text>
           </View>
         }
@@ -288,7 +288,7 @@ const CoursesScreen = () => {
             <ActivityIndicator size="small" color="#55BAD3" className="my-4" />
           ) : courses.length > 0 ? (
             <View className="py-4">
-              <Text className="text-center text-gray-400">Hết khóa học</Text>
+              <Text className="text-center text-gray-400">No more courses</Text>
             </View>
           ) : null
         }

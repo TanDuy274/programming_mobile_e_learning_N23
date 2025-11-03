@@ -87,9 +87,7 @@ const CategoryScreen = () => {
           </Text>
         ) : null}
         <Text className="text-[#55BAD3] mt-2 text-sm font-medium">
-          {item.courseCount
-            ? `${item.courseCount} khóa học`
-            : "Xem các khóa học"}
+          {item.courseCount ? `${item.courseCount} courses` : "View courses"}
         </Text>
       </View>
 
@@ -103,14 +101,14 @@ const CategoryScreen = () => {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#55BAD3" />
-        <Text className="mt-3 text-gray-500">Đang tải danh mục...</Text>
+        <Text className="mt-3 text-gray-500">Loading categories...</Text>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-white px-4">
-      <Text className="text-2xl font-bold mt-6 mb-4">Danh mục khóa học</Text>
+      <Text className="text-2xl font-bold mt-6 mb-4">Course Categories</Text>
 
       <FlatList
         data={categories}
@@ -127,7 +125,7 @@ const CategoryScreen = () => {
         ListEmptyComponent={
           <View className="py-16 items-center">
             <Ionicons name="albums-outline" size={36} color="#999" />
-            <Text className="mt-2 text-gray-500">Không có danh mục nào</Text>
+            <Text className="mt-2 text-gray-500">No categories found</Text>
           </View>
         }
       />
