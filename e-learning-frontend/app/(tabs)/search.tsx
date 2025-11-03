@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StatusBar,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,7 +17,6 @@ import { Lesson } from "@/types";
 import CourseCard from "@/components/CourseCard";
 import CategoryListItem from "@/components/CategoryListItem";
 import EmptyState from "@/components/EmptyState";
-// import { StatusBar } from "expo-status-bar";
 
 interface Course {
   _id: string;
@@ -54,11 +54,14 @@ const categoryDetails: {
 };
 
 const SearchScreen = () => {
+  const router = useRouter();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Course[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [recommended, setRecommended] = useState<Course[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -67,57 +70,37 @@ const SearchScreen = () => {
     }, [])
   );
 
-  //Lấy dữ liệu ban đầu
+  const fetchInitial = useCallback(async () => {
+    try {
+      const [catRes, recRes] = await Promise.all([
+        api.get("/categories?limit=6"),
+        api.get("/courses", { params: { sort: "recommended", limit: 5 } }),
+      ]);
+      setCategories(
+        Array.isArray(catRes.data) ? catRes.data : (catRes.data?.docs ?? [])
+      );
+      setRecommended(
+        Array.isArray(recRes.data?.docs)
+          ? recRes.data.docs
+          : (recRes.data ?? [])
+      );
+    } catch (err) {
+      console.error("Fetch initial data failed:", err);
+    }
+  }, []);
+
+  // Lấy dữ liệu ban đầu
   useEffect(() => {
     let isMounted = true;
     (async () => {
-      try {
-        const [catRes, recRes] = await Promise.all([
-          api.get("/categories"),
-          api.get("/courses?limit=4"),
-        ]);
-        if (isMounted) {
-          setCategories(catRes.data);
-          setRecommended(recRes.data);
-        }
-      } catch (err) {
-        console.error("Fetch initial data failed:", err);
-      }
+      await fetchInitial();
     })();
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [fetchInitial]);
 
   const clearSearch = useCallback(() => setSearchQuery(""), []);
-
-  //Render từng Category
-  const renderCategoryItem = useCallback(
-    ({ item }: { item: Category }) => (
-      <CategoryListItem
-        key={item._id}
-        categoryName={item.name}
-        iconName={categoryDetails[item.name]?.icon || "help-circle-outline"}
-        color={categoryDetails[item.name]?.color || "#bdc3c7"}
-        onPress={() => {
-          // navigation.navigate("CategoryDetail", { categoryId: item._id });
-        }}
-      />
-    ),
-    []
-  );
-
-  // Logic tìm kiếm (debounce 500ms)
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (searchQuery.trim().length > 1) {
-        handleSearch(searchQuery);
-      } else {
-        setSearchResults([]);
-      }
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [searchQuery]);
 
   const handleSearch = useCallback(async (query: string) => {
     setIsSearching(true);
@@ -133,7 +116,49 @@ const SearchScreen = () => {
     }
   }, []);
 
-  //Render từng item Course
+  // Debounce search 500ms
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (searchQuery.trim().length > 1) handleSearch(searchQuery);
+      else setSearchResults([]);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [searchQuery, handleSearch]);
+
+  // Pull-to-refresh chung (tùy theo trạng thái)
+  const onRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      if (searchQuery.trim().length > 1) {
+        await handleSearch(searchQuery);
+      } else {
+        await fetchInitial();
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [searchQuery, handleSearch, fetchInitial]);
+
+  // Render Category item
+  const renderCategoryItem = useCallback(
+    ({ item }: { item: Category }) => (
+      <CategoryListItem
+        key={item._id}
+        categoryName={item.name}
+        iconName={categoryDetails[item.name]?.icon || "help-circle-outline"}
+        color={categoryDetails[item.name]?.color || "#bdc3c7"}
+        onPress={() =>
+          router.push({
+            pathname: "/course",
+            params: { categoryId: item._id, categoryName: item.name },
+          })
+        }
+      />
+    ),
+    [router]
+  );
+
+  // Render Course item
   const renderCourseItem = useCallback(
     ({ item }: { item: Course }) => (
       <CourseCard
@@ -151,7 +176,7 @@ const SearchScreen = () => {
     []
   );
 
-  //khi chưa tìm kiếm
+  // View khởi tạo (chưa tìm kiếm)
   const renderInitialView = useMemo(
     () => (
       <FlatList
@@ -159,6 +184,13 @@ const SearchScreen = () => {
         data={categories}
         keyExtractor={(item) => item._id}
         renderItem={renderCategoryItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            colors={["#55BAD3"]}
+          />
+        }
         ListHeaderComponent={
           <>
             {/* Hot Topics */}
@@ -184,7 +216,7 @@ const SearchScreen = () => {
               <Text className="text-xl font-bold text-gray-800">
                 Categories
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/categories")}>
                 <Text className="text-[#55BAD3]">View more</Text>
               </TouchableOpacity>
             </View>
@@ -198,10 +230,18 @@ const SearchScreen = () => {
                 <Text className="text-xl font-bold text-gray-800">
                   Recommended for you
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/course",
+                      params: { sort: "recommended" },
+                    })
+                  }
+                >
                   <Text className="text-[#55BAD3]">View more</Text>
                 </TouchableOpacity>
               </View>
+
               <FlatList
                 data={recommended}
                 horizontal
@@ -230,7 +270,14 @@ const SearchScreen = () => {
         contentContainerStyle={{ paddingBottom: 60 }}
       />
     ),
-    [categories, recommended, renderCategoryItem]
+    [
+      categories,
+      recommended,
+      renderCategoryItem,
+      isRefreshing,
+      onRefresh,
+      router,
+    ]
   );
 
   return (
@@ -274,6 +321,13 @@ const SearchScreen = () => {
             data={searchResults}
             keyExtractor={(item) => item._id}
             renderItem={renderCourseItem}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={onRefresh}
+                colors={["#55BAD3"]}
+              />
+            }
             ListEmptyComponent={
               <EmptyState
                 icon="search-circle-outline"
