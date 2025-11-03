@@ -45,11 +45,20 @@ const HomeScreen = () => {
     useContext(AuthContext);
   const router = useRouter();
   const { data, isLoading, isRefreshing, onRefresh } = useFetchData([
-    "/categories",
-    "/courses",
-    "/users/teachers",
+    "/categories?limit=6",
+    "/courses?sort=popular&limit=5",
+    "/courses?sort=recommended&limit=5",
+    "/courses?featured=1&limit=3",
+    "/users/teachers?limit=10",
   ]);
-  const [categories, courses, teachers] = data;
+  const [categoriesRes, popularRes, recommendedRes, featuredRes, teachersRes] =
+    data;
+
+  const categories = categoriesRes?.docs ?? categoriesRes ?? [];
+  const popularCourses = popularRes?.docs ?? popularRes ?? [];
+  const recommendedCourses = recommendedRes?.docs ?? recommendedRes ?? [];
+  const featuredCourses = featuredRes?.docs ?? featuredRes ?? [];
+  const teachers = teachersRes?.docs ?? teachersRes ?? [];
 
   useFocusEffect(
     useCallback(() => {
@@ -83,6 +92,35 @@ const HomeScreen = () => {
   };
 
   console.log("render");
+
+  const handleViewMore = (
+    target: "categories" | "popular" | "recommended" | "featured" | "teachers"
+  ) => {
+    switch (target) {
+      case "categories":
+        router.push("/categories");
+        break;
+
+      case "popular":
+        router.push({ pathname: "/course", params: { sort: "popular" } });
+        break;
+
+      case "recommended":
+        router.push({
+          pathname: "/course",
+          params: { sort: "recommended" },
+        });
+        break;
+
+      case "featured":
+        router.push({ pathname: "/course", params: { featured: "1" } });
+        break;
+
+      case "teachers":
+        router.push("/teacher");
+        break;
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["left", "right"]}>
@@ -159,7 +197,7 @@ const HomeScreen = () => {
           <View className="mt-8">
             <View className="flex-row justify-between items-center mb-2">
               <Text className="text-2xl font-bold">Categories</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleViewMore("categories")}>
                 <Text className="text-[#55BAD3] font-medium">View more</Text>
               </TouchableOpacity>
             </View>
@@ -176,6 +214,12 @@ const HomeScreen = () => {
                     categoryDetails[item.name]?.icon || "help-circle-outline"
                   }
                   color={categoryDetails[item.name]?.color || "#bdc3c7"}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/course",
+                      params: { categoryId: item._id, categoryName: item.name },
+                    })
+                  }
                 />
               )}
             />
@@ -185,12 +229,12 @@ const HomeScreen = () => {
           <View className="mt-8">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-2xl font-bold">Popular courses</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleViewMore("popular")}>
                 <Text className="text-[#55BAD3] font-medium">View more</Text>
               </TouchableOpacity>
             </View>
             <FlatList
-              data={courses}
+              data={popularCourses}
               horizontal
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item: Course) => item._id}
@@ -217,12 +261,12 @@ const HomeScreen = () => {
           <View className="mt-8">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-2xl font-bold">Recommended for you</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleViewMore("recommended")}>
                 <Text className="text-[#55BAD3] font-medium">View more</Text>
               </TouchableOpacity>
             </View>
             <FlatList
-              data={courses?.slice().reverse()}
+              data={recommendedCourses}
               horizontal
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item: Course) => item._id}
@@ -245,7 +289,7 @@ const HomeScreen = () => {
           <View className="mt-8">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-2xl font-bold">Course that inspires</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleViewMore("featured")}>
                 <Text className="text-[#55BAD3] font-medium">View more</Text>
               </TouchableOpacity>
             </View>
@@ -268,7 +312,7 @@ const HomeScreen = () => {
               )}
             /> */}
             <View>
-              {courses.slice(0, 3).map((item: Course) => (
+              {featuredCourses?.map((item: Course) => (
                 <SavedCourseCard
                   key={item._id}
                   id={item._id}
@@ -288,7 +332,7 @@ const HomeScreen = () => {
           <View className="mt-8 mb-8">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-2xl font-bold">Top teachers</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleViewMore("teachers")}>
                 <Text className="text-[#55BAD3] font-medium">View more</Text>
               </TouchableOpacity>
             </View>
