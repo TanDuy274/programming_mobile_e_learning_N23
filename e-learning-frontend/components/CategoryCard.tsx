@@ -6,11 +6,15 @@ type Props = {
   iconName: keyof typeof Ionicons.glyphMap;
   categoryName: string;
   color: string;
+  onPress?: () => void;
 };
 
-const CategoryCard = ({ iconName, categoryName, color }: Props) => {
+const CategoryCard = ({ iconName, categoryName, color, onPress }: Props) => {
   return (
-    <TouchableOpacity className="p-2 m-2 bg-white rounded-lg border border-gray-200 flex-row items-center flex-1">
+    <TouchableOpacity
+      className="p-2 m-2 bg-white rounded-lg border border-gray-200 flex-row items-center flex-1"
+      onPress={onPress}
+    >
       <View
         className={`w-12 h-12 items-center justify-center rounded-md`}
         style={{ backgroundColor: color }}

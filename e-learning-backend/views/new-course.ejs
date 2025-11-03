@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <title>Thêm Khóa học mới</title>
@@ -11,6 +11,7 @@
       .form-container {
         padding: 20px;
         border: 1px solid #ccc;
+        border-radius: 8px;
       }
       .form-group {
         margin-bottom: 15px;
@@ -18,6 +19,7 @@
       label {
         display: block;
         margin-bottom: 5px;
+        font-weight: 600;
       }
       input,
       select,
@@ -26,7 +28,6 @@
         padding: 8px;
         box-sizing: border-box;
       }
-      /* Style mới cho quản lý bài học */
       .lesson-item {
         background: #f9f9f9;
         padding: 15px;
@@ -56,48 +57,119 @@
         border-radius: 4px;
         margin-top: 10px;
       }
+      .checkbox-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 5px;
+      }
+      /* 1) Chỉ áp display:block cho label trong .form-group bình thường */
+      .form-group > label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      /* 2) Với hàng checkbox dùng flex, label để inline và bỏ margin thừa */
+      .checkbox-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* đã có, để nguyên */
+        margin-top: 5px; /* đã có, để nguyên */
+      }
+      .checkbox-inline label {
+        display: inline; /* hoặc inline-block đều được */
+        margin: 0; /* không đẩy label xuống dòng */
+        font-weight: 500; /* nhẹ hơn chút để cân đối */
+      }
+
+      /* 3) Nắn lại chính checkbox một chút (tránh bị lệch đường cơ sở) */
+      .checkbox-inline input[type="checkbox"] {
+        width: auto;
+        height: auto;
+        margin: 0;
+        vertical-align: middle; /* canh giữa theo baseline */
+        transform: translateY(1px); /* tuỳ UI, có thể bỏ nếu không cần */
+        /* accent-color: #2ecc71;    // tuỳ chọn: đổi màu checkbox nếu muốn */
+      }
     </style>
   </head>
+
   <body>
     <h1>Thêm Khóa học mới</h1>
+
     <div class="form-container">
       <form action="/admin/courses/new" method="POST">
         <div class="form-group">
-          <label for="title">Tiêu đề</label
-          ><input type="text" id="title" name="title" required />
+          <label for="title">Tiêu đề</label>
+          <input type="text" id="title" name="title" required />
         </div>
+
         <div class="form-group">
-          <label for="description">Mô tả</label
-          ><textarea id="description" name="description" rows="4"></textarea>
+          <label for="description">Mô tả</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            required
+          ></textarea>
         </div>
+
         <div class="form-group">
-          <label for="price">Giá</label
-          ><input type="number" id="price" name="price" required />
+          <label for="price">Giá (USD)</label>
+          <input type="number" id="price" name="price" required />
         </div>
+
         <div class="form-group">
-          <label for="thumbnail">Link ảnh bìa</label
-          ><input type="text" id="thumbnail" name="thumbnail" />
+          <label for="thumbnail">Link ảnh bìa</label>
+          <input
+            type="text"
+            id="thumbnail"
+            name="thumbnail"
+            placeholder="https://..."
+          />
         </div>
+
         <div class="form-group">
-          <label for="instructor">Giảng viên</label
-          ><select id="instructor" name="instructor">
+          <label>Giảng viên</label>
+          <select name="instructor" required>
             <% teachers.forEach(teacher => { %>
             <option value="<%= teacher._id %>"><%= teacher.name %></option>
             <% }) %>
           </select>
         </div>
+
         <div class="form-group">
-          <label for="category">Danh mục</label
-          ><select id="category" name="category">
-            <% categories.forEach(category => { %>
-            <option value="<%= category._id %>"><%= category.name %></option>
+          <label>Danh mục</label>
+          <select name="category" required>
+            <% categories.forEach(cat => { %>
+            <option value="<%= cat._id %>"><%= cat.name %></option>
             <% }) %>
           </select>
         </div>
 
+        <div class="form-group">
+          <label>Tags (phân tách bằng dấu phẩy)</label>
+          <input
+            type="text"
+            name="tags"
+            placeholder="ví dụ: react, mobile, beginner"
+          />
+        </div>
+
+        <div class="form-group checkbox-inline">
+          <input type="checkbox" id="isPublished" name="isPublished" checked />
+          <label for="isPublished">Công khai (Published)</label>
+        </div>
+
+        <div class="form-group checkbox-inline">
+          <input type="checkbox" id="isFeatured" name="isFeatured" />
+          <label for="isFeatured">Nổi bật (Featured)</label>
+        </div>
+
         <hr style="margin: 30px 0" />
 
-        <h2>Quản lý Bài học</h2>
+        <h2>Danh sách bài học</h2>
         <div id="lessons-container"></div>
         <button type="button" class="add-btn" onclick="addLesson()">
           + Thêm bài học
@@ -115,32 +187,29 @@
       const lessonsContainer = document.getElementById("lessons-container");
 
       function addLesson() {
-        const lessonDiv = document.createElement("div");
-        lessonDiv.className = "lesson-item";
-        lessonDiv.innerHTML = `
-                <div class="lesson-header">
-                    <h4>Bài học ${lessonIndex + 1}</h4>
-                    <button type="button" class="remove-btn" onclick="removeLesson(this)">Xóa</button>
-                </div>
-                <div class="form-group">
-                    <label>Tiêu đề bài học</label>
-                    <input type="text" name="lessons[${lessonIndex}][title]" required>
-                </div>
-                <div class="form-group">
-                    <label>YouTube Video ID</label>
-                    <input type="text" name="lessons[${lessonIndex}][youtubeVideoId]" required>
-                </div>
-                <div class="form-group">
-                    <label>Thời lượng (phút)</label>
-                    <input type="number" name="lessons[${lessonIndex}][duration]" required>
-                </div>
-            `;
-        lessonsContainer.appendChild(lessonDiv);
+        const div = document.createElement("div");
+        div.className = "lesson-item";
+        div.innerHTML = `
+          <div class="lesson-header">
+            <h4>Bài học ${lessonIndex + 1}</h4>
+            <button type="button" class="remove-btn" onclick="removeLesson(this)">Xóa</button>
+          </div>
+          <div class="form-group"><label>Tiêu đề bài học</label>
+            <input type="text" name="lessons[${lessonIndex}][title]" required />
+          </div>
+          <div class="form-group"><label>YouTube Video ID</label>
+            <input type="text" name="lessons[${lessonIndex}][youtubeVideoId]" required />
+          </div>
+          <div class="form-group"><label>Thời lượng (phút)</label>
+            <input type="number" name="lessons[${lessonIndex}][duration]" required />
+          </div>
+        `;
+        lessonsContainer.appendChild(div);
         lessonIndex++;
       }
 
-      function removeLesson(button) {
-        button.closest(".lesson-item").remove();
+      function removeLesson(btn) {
+        btn.closest(".lesson-item").remove();
       }
     </script>
   </body>

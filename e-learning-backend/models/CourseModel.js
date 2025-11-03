@@ -58,6 +58,13 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    studentsEnrolled: { type: Number, default: 0 }, // tổng số người học
+    totalDurationMinutes: { type: Number, default: 0 }, // tổng thời lượng khóa học
+
+    // Cho “view more” / filter
+    isFeatured: { type: Boolean, default: false }, // featured (hiện ở mục "Inspires")
+    isPublished: { type: Boolean, default: true }, // ẩn/hiện khóa học
+    tags: [{ type: String }], // từ khóa phục vụ search
   },
   {
     timestamps: true,
@@ -76,7 +83,22 @@ courseSchema.pre("save", function (next) {
   if (this.title) {
     this.titleNoAccent = removeVietnameseTones(this.title);
   }
+
+  // Tính tổng thời lượng bài học
+  if (this.lessons?.length > 0) {
+    this.totalDurationMinutes = this.lessons.reduce(
+      (sum, lesson) => sum + (lesson.duration || 0),
+      0
+    );
+  } else {
+    this.totalDurationMinutes = 0;
+  }
+
   next();
 });
+
+courseSchema.index({ rating: -1 });
+courseSchema.index({ reviewCount: -1 });
+courseSchema.index({ isFeatured: 1 });
 
 module.exports = mongoose.model("Course", courseSchema);

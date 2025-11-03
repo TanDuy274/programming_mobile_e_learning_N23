@@ -153,19 +153,30 @@ router.get("/courses/new", async (req, res) => {
     res.send("Lỗi tải dữ liệu cho form");
   }
 });
-
 router.post("/courses/new", async (req, res) => {
   try {
-    const { title, description, price, instructor, category, thumbnail } =
+    const { title, description, price, instructor, category, thumbnail, tags } =
       req.body;
 
+    // ✅ Ép kiểu cho checkbox và tags
+    const isPublished = !!req.body.isPublished;
+    const isFeatured = !!req.body.isFeatured;
+    const parsedTags = tags
+      ? tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
+
+    // ✅ Lọc danh sách bài học
     let lessons = [];
     if (req.body.lessons) {
       lessons = req.body.lessons.filter(
-        (lesson) => lesson.title && lesson.youtubeVideoId && lesson.duration
+        (l) => l.title && l.youtubeVideoId && l.duration
       );
     }
 
+    // ✅ Tạo khóa học mới
     await Course.create({
       title,
       description,
@@ -174,9 +185,14 @@ router.post("/courses/new", async (req, res) => {
       category,
       thumbnail,
       lessons,
+      tags: parsedTags,
+      isPublished,
+      isFeatured,
     });
+
     res.redirect("/admin/courses");
   } catch (error) {
+    console.error("Lỗi khi tạo khóa học:", error);
     res.send("Lỗi khi tạo khóa học");
   }
 });
@@ -200,18 +216,27 @@ router.get("/courses/:id/edit", async (req, res) => {
     res.send("Lỗi tải dữ liệu cho form sửa");
   }
 });
-
 router.post("/courses/:id/edit", async (req, res) => {
   try {
-    const { title, description, price, instructor, category, thumbnail } =
+    const { title, description, price, instructor, category, thumbnail, tags } =
       req.body;
+
+    const isPublished = !!req.body.isPublished;
+    const isFeatured = !!req.body.isFeatured;
+    const parsedTags = tags
+      ? tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
 
     let lessons = [];
     if (req.body.lessons) {
       lessons = req.body.lessons.filter(
-        (lesson) => lesson.title && lesson.youtubeVideoId && lesson.duration
+        (l) => l.title && l.youtubeVideoId && l.duration
       );
     }
+
     await Course.findByIdAndUpdate(req.params.id, {
       title,
       description,
@@ -220,9 +245,14 @@ router.post("/courses/:id/edit", async (req, res) => {
       category,
       thumbnail,
       lessons,
+      tags: parsedTags,
+      isPublished,
+      isFeatured,
     });
+
     res.redirect("/admin/courses");
   } catch (error) {
+    console.error("Lỗi khi cập nhật khóa học:", error);
     res.send("Lỗi khi cập nhật khóa học");
   }
 });

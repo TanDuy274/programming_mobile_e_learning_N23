@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <title>Admin - Quản lý Khóa học</title>
@@ -31,9 +31,59 @@
       nav a.active {
         border-bottom: 2px solid blue;
       }
+      .thumb {
+        width: 64px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #eee;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 12px;
+        border-radius: 999px;
+        margin-right: 4px;
+      }
+      .badge-green {
+        background: #e9f7ef;
+        color: #1e8449;
+        border: 1px solid #d4efdf;
+      }
+      .badge-gray {
+        background: #f4f6f7;
+        color: #626567;
+        border: 1px solid #e5e7e9;
+      }
+      .badge-yellow {
+        background: #fef5e7;
+        color: #b9770e;
+        border: 1px solid #fae5d3;
+      }
+      .chip {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #f4f6f7;
+        margin: 2px;
+        font-size: 12px;
+      }
       .youtube-id-list {
         word-break: break-all;
         line-height: 1.5;
+      }
+      .actions a {
+        margin-right: 8px;
+      }
+      .nowrap {
+        white-space: nowrap;
+      }
+      .muted {
+        color: #7f8c8d;
+      }
+      details > summary {
+        cursor: pointer;
+        user-select: none;
       }
     </style>
   </head>
@@ -50,6 +100,7 @@
     </nav>
 
     <h1>Danh sách Khóa học</h1>
+
     <a
       href="/admin/courses/new"
       style="
@@ -60,41 +111,146 @@
         color: white;
         text-decoration: none;
       "
-      >+ Thêm khóa học mới</a
     >
+      + Thêm khóa học mới
+    </a>
+
     <table>
       <thead>
         <tr>
+          <th>Ảnh</th>
           <th>Tiêu đề</th>
           <th>Giảng viên</th>
           <th>Danh mục</th>
           <th>Giá</th>
-          <th>Youtube IDs (Tất cả)</th>
+          <th>Đánh giá</th>
+          <th>Học viên</th>
+          <th>Thời lượng</th>
+          <th>Trạng thái</th>
+          <th>Tags</th>
+          <th>Bài học / YouTube IDs</th>
           <th>Hành động</th>
         </tr>
       </thead>
-      <tbody>
-        <% courses.forEach(course=> { %>
-        <tr>
-          <td><%= course.title %></td>
-          <td><%= course.instructor ? course.instructor.name : 'N/A' %></td>
-          <td><%= course.category ? course.category.name : 'N/A' %></td>
-          <td>$<%= course.price %></td>
 
-          <td class="youtube-id-list">
-            <% if (course.lessons && course.lessons.length > 0) { %> <%
-            course.lessons.forEach(lesson => { %>
-            <span><%= lesson.youtubeVideoId %></span><br />
-            <% }) %> <% } else { %> N/A <% } %>
+      <tbody>
+        <% (courses || []).forEach(course => { %>
+        <tr>
+          <!-- Ảnh -->
+          <td>
+            <% if (course.thumbnail && course.thumbnail !== 'no-photo.jpg') { %>
+            <img class="thumb" src="<%= course.thumbnail %>" alt="thumb" />
+            <% } else { %>
+            <span class="muted">no-photo</span>
+            <% } %>
           </td>
 
+          <!-- Tiêu đề -->
           <td>
+            <div><strong><%= course.title %></strong></div>
+            <div class="muted">
+              <small><%= course.titleNoAccent || '' %></small>
+            </div>
+            <div class="muted"><small>#<%= course._id %></small></div>
+            <div class="muted">
+              <small
+                >Cập nhật: <%= new Date(course.updatedAt).toLocaleString()
+                %></small
+              >
+            </div>
+          </td>
+
+          <!-- Giảng viên -->
+          <td><%= course.instructor ? course.instructor.name : 'N/A' %></td>
+
+          <!-- Danh mục -->
+          <td><%= course.category ? course.category.name : 'N/A' %></td>
+
+          <!-- Giá -->
+          <td class="nowrap">$<%= (Number(course.price) || 0).toFixed(2) %></td>
+
+          <!-- Đánh giá -->
+          <td>
+            <span class="nowrap"
+              >⭐ <%= (Number(course.rating) || 0).toFixed(1) %></span
+            >
+            <div class="muted">
+              <small><%= course.reviewCount || 0 %> reviews</small>
+            </div>
+          </td>
+
+          <!-- Học viên -->
+          <td class="nowrap"><%= course.studentsEnrolled || 0 %></td>
+
+          <!-- Thời lượng -->
+          <td>
+            <span class="nowrap"
+              ><%= course.totalDurationMinutes || 0 %> phút</span
+            >
+            <% if (course.lessons && course.lessons.length) { %>
+            <div class="muted">
+              <small><%= course.lessons.length %> bài</small>
+            </div>
+            <% } %>
+          </td>
+
+          <!-- Trạng thái -->
+          <td>
+            <% if (course.isPublished) { %>
+            <span class="badge badge-green">Published</span>
+            <% } else { %>
+            <span class="badge badge-gray">Draft</span>
+            <% } %> <% if (course.isFeatured) { %>
+            <span class="badge badge-yellow">Featured</span>
+            <% } %>
+          </td>
+
+          <!-- Tags -->
+          <td>
+            <% if (Array.isArray(course.tags) && course.tags.length) { %> <%
+            course.tags.forEach(t => { %>
+            <span class="chip"><%= t %></span>
+            <% }) %> <% } else { %>
+            <span class="muted">—</span>
+            <% } %>
+          </td>
+
+          <!-- Bài học / YouTube IDs -->
+          <td class="youtube-id-list">
+            <% if (course.lessons && course.lessons.length > 0) { %>
+            <details>
+              <summary>
+                <%= course.lessons.length %> bài — xem YouTube IDs
+              </summary>
+              <% course.lessons.forEach((lesson, idx) => { %>
+              <div>
+                <strong><%= idx + 1 %>.</strong> <%= lesson.title %> — <%=
+                lesson.duration %>’<br />
+                <small class="muted"><%= lesson.youtubeVideoId %></small>
+              </div>
+              <% }) %>
+            </details>
+            <% } else { %>
+            <span class="muted">N/A</span>
+            <% } %>
+          </td>
+
+          <!-- Hành động -->
+          <td class="actions">
             <a href="/admin/courses/<%= course._id %>/edit">Sửa</a> |
             <a
               href="/admin/courses/<%= course._id %>/delete"
               onclick="return confirm('Bạn chắc chắn muốn xóa?')"
               >Xóa</a
             >
+            <!-- (Tùy chọn) nút toggle nhanh:
+                   <form method="post" action="/admin/courses/<%= course._id %>/toggle-publish" style="display:inline;">
+                     <button type="submit" style="margin-left:6px;"><%= course.isPublished ? 'Unpublish' : 'Publish' %></button>
+                   </form>
+                   <form method="post" action="/admin/courses/<%= course._id %>/toggle-featured" style="display:inline;">
+                     <button type="submit" style="margin-left:6px;"><%= course.isFeatured ? 'Unfeature' : 'Feature' %></button>
+                   </form>
+              -->
           </td>
         </tr>
         <% }) %>
