@@ -7,11 +7,13 @@ import {
   ActivityIndicator,
   RefreshControl,
   Image,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import api from "@/api/api";
+import Header from "@/components/Header";
 
 interface Category {
   _id: string;
@@ -26,6 +28,13 @@ const CategoryScreen = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBackgroundColor("#FFFFFF");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -107,14 +116,15 @@ const CategoryScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-4">
-      <Text className="text-2xl font-bold mt-6 mb-4">Course Categories</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <Header title="Course Categories" showBackButton />
 
       <FlatList
         data={categories}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={false}
+        className="mt-4 px-4"
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
