@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   RefreshControl,
   Image,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import api from "@/api/api";
+import Header from "@/components/Header";
 
 interface Instructor {
   name: string;
@@ -37,6 +39,82 @@ function asStr(v: ParamStr): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
+const FilterBar = React.memo(
+  ({
+    sort,
+    featuredOnly,
+    onChangeSort,
+    onToggleFeatured,
+    clearFilters,
+  }: any) => {
+    return (
+      <View className="flex-row flex-wrap mb-4 gap-2 mt-4 px-4">
+        {/* Nút sắp xếp */}
+        <TouchableOpacity
+          onPress={() => {
+            const nextSort =
+              sort === "newest"
+                ? "popular"
+                : sort === "popular"
+                  ? "priceAsc"
+                  : sort === "priceAsc"
+                    ? "priceDesc"
+                    : "newest";
+            onChangeSort(nextSort);
+            // fetchPage(1);
+          }}
+          className="flex-row items-center px-3 py-1.5 border border-gray-300 rounded-full bg-gray-50"
+        >
+          <Ionicons name="swap-vertical-outline" size={16} color="#555" />
+          <Text className="ml-1 text-gray-700 text-sm">
+            {sort === "newest"
+              ? "Newest"
+              : sort === "popular"
+                ? "Popular"
+                : sort === "priceAsc"
+                  ? "Price: Low to High"
+                  : "Price: High to Low"}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Nút Featured */}
+        <TouchableOpacity
+          onPress={onToggleFeatured}
+          className={`flex-row items-center px-3 py-1.5 rounded-full border ${
+            featuredOnly
+              ? "bg-[#55BAD3] border-[#55BAD3]"
+              : "bg-gray-50 border-gray-300"
+          }`}
+        >
+          <Ionicons
+            name="star-outline"
+            size={16}
+            color={featuredOnly ? "white" : "#555"}
+          />
+          <Text
+            className={`ml-1 text-sm ${
+              featuredOnly ? "text-white font-semibold" : "text-gray-700"
+            }`}
+          >
+            Featured
+          </Text>
+        </TouchableOpacity>
+
+        {/* Nút clear */}
+        {(featuredOnly || sort !== "newest") && (
+          <TouchableOpacity
+            onPress={clearFilters}
+            className="flex-row items-center px-3 py-1.5 border border-gray-300 rounded-full bg-gray-50"
+          >
+            <Ionicons name="close-circle-outline" size={16} color="#555" />
+            <Text className="ml-1 text-gray-700 text-sm">Clear Filters</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  }
+);
+
 const CoursesScreen = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -59,6 +137,13 @@ const CoursesScreen = () => {
   const [hasNext, setHasNext] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBackgroundColor("#FFFFFF");
+      StatusBar.setBarStyle("dark-content");
+    }, [])
+  );
 
   // tiêu đề
   const title = useMemo(() => {
@@ -113,7 +198,8 @@ const CoursesScreen = () => {
   );
 
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
+    // setIsRefreshing(true);
     setPage(1);
     fetchPage(1);
   }, [fetchPage]);
@@ -132,49 +218,61 @@ const CoursesScreen = () => {
     }
   };
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSort("newest");
     setFeaturedOnly(false);
-    fetchPage(1);
-  };
+    // fetchPage(1);
+  }, []);
 
-  const renderItem = ({ item }: { item: Course }) => (
-    <TouchableOpacity
-      onPress={() => router.push(`/course/${item._id}`)}
-      className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-200 overflow-hidden"
-    >
-      <Image
-        source={{ uri: item.thumbnail }}
-        className="w-full h-48"
-        resizeMode="cover"
-      />
-      <View className="p-4">
-        <Text className="text-lg font-bold text-gray-900 mb-1">
-          {item.title}
-        </Text>
-        <Text className="text-gray-500 text-sm">
-          {item.instructor?.name} • {item.category?.name}
-        </Text>
+  const onChangeSort = useCallback((newSortValue: string) => {
+    // <-- Sửa lại để nhận giá trị
+    setSort(newSortValue as any); // (cast 'as any' nếu cần)
+  }, []);
 
-        <View className="flex-row items-center mt-2">
-          <Ionicons name="star" size={16} color="#f1c40f" />
-          <Text className="ml-1 text-sm text-gray-700">
-            {Number(item.rating || 0).toFixed(1)} ({item.reviewCount || 0})
+  const onToggleFeatured = useCallback(() => {
+    setFeaturedOnly((prev) => !prev);
+  }, []);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Course }) => (
+      <TouchableOpacity
+        onPress={() => router.push(`/course/${item._id}`)}
+        className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-200 overflow-hidden"
+      >
+        <Image
+          source={{ uri: item.thumbnail }}
+          className="w-full h-48"
+          resizeMode="cover"
+        />
+        <View className="p-4">
+          <Text className="text-lg font-bold text-gray-900 mb-1">
+            {item.title}
           </Text>
-        </View>
-
-        <View className="flex-row justify-between items-center mt-3">
-          <Text className="text-[#55BAD3] font-bold text-lg">
-            ${Number(item.price || 0).toFixed(2)}
+          <Text className="text-gray-500 text-sm">
+            {item.instructor?.name} • {item.category?.name}
           </Text>
-          {item.totalDurationMinutes ? (
-            <Text className="text-gray-500 text-sm">
-              ⏱ {item.totalDurationMinutes} minutes
+
+          <View className="flex-row items-center mt-2">
+            <Ionicons name="star" size={16} color="#f1c40f" />
+            <Text className="ml-1 text-sm text-gray-700">
+              {Number(item.rating || 0).toFixed(1)} ({item.reviewCount || 0})
             </Text>
-          ) : null}
+          </View>
+
+          <View className="flex-row justify-between items-center mt-3">
+            <Text className="text-[#55BAD3] font-bold text-lg">
+              ${Number(item.price || 0).toFixed(2)}
+            </Text>
+            {item.totalDurationMinutes ? (
+              <Text className="text-gray-500 text-sm">
+                ⏱ {item.totalDurationMinutes} minutes
+              </Text>
+            ) : null}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    ),
+    []
   );
 
   if (isLoading && page === 1) {
@@ -188,77 +286,19 @@ const CoursesScreen = () => {
 
   // giao diện
   return (
-    <SafeAreaView className="flex-1 bg-white px-4">
+    <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <Text className="text-2xl font-bold mt-4 mb-3">{title}</Text>
+      <Header title={title} showBackButton />
 
       {/* Nhóm nút lọc đơn giản */}
-      <View className="flex-row flex-wrap mb-4 gap-2">
-        {/* Nút sắp xếp */}
-        <TouchableOpacity
-          onPress={() => {
-            const nextSort =
-              sort === "newest"
-                ? "popular"
-                : sort === "popular"
-                  ? "priceAsc"
-                  : sort === "priceAsc"
-                    ? "priceDesc"
-                    : "newest";
-            setSort(nextSort);
-            fetchPage(1);
-          }}
-          className="flex-row items-center px-3 py-1.5 border border-gray-300 rounded-full bg-gray-50"
-        >
-          <Ionicons name="swap-vertical-outline" size={16} color="#555" />
-          <Text className="ml-1 text-gray-700 text-sm">
-            {sort === "newest"
-              ? "Newest"
-              : sort === "popular"
-                ? "Popular"
-                : sort === "priceAsc"
-                  ? "Price: Low to High"
-                  : "Price: High to Low"}
-          </Text>
-        </TouchableOpacity>
 
-        {/* Nút Featured */}
-        <TouchableOpacity
-          onPress={() => {
-            setFeaturedOnly((prev) => !prev);
-            fetchPage(1);
-          }}
-          className={`flex-row items-center px-3 py-1.5 rounded-full border ${
-            featuredOnly
-              ? "bg-[#55BAD3] border-[#55BAD3]"
-              : "bg-gray-50 border-gray-300"
-          }`}
-        >
-          <Ionicons
-            name="star-outline"
-            size={16}
-            color={featuredOnly ? "white" : "#555"}
-          />
-          <Text
-            className={`ml-1 text-sm ${
-              featuredOnly ? "text-white font-semibold" : "text-gray-700"
-            }`}
-          >
-            Featured
-          </Text>
-        </TouchableOpacity>
-
-        {/* Nút clear */}
-        {(featuredOnly || sort !== "newest") && (
-          <TouchableOpacity
-            onPress={clearFilters}
-            className="flex-row items-center px-3 py-1.5 border border-gray-300 rounded-full bg-gray-50"
-          >
-            <Ionicons name="close-circle-outline" size={16} color="#555" />
-            <Text className="ml-1 text-gray-700 text-sm">Clear Filters</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      <FilterBar
+        sort={sort}
+        featuredOnly={featuredOnly}
+        onChangeSort={onChangeSort}
+        onToggleFeatured={onToggleFeatured}
+        clearFilters={clearFilters}
+      />
 
       {/* Danh sách */}
       <FlatList
@@ -268,6 +308,7 @@ const CoursesScreen = () => {
         showsVerticalScrollIndicator={false}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
+        className="px-4"
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
