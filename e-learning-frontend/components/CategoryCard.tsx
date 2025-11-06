@@ -21,7 +21,7 @@ const CategoryCard = ({ iconName, categoryName, color, onPress }: Props) => {
       >
         <Ionicons name={iconName} size={24} color="white" />
       </View>
-      <Text className="font-bold ml-2">{categoryName}</Text>
+      <Text className="font-bold ml-2 flex-shrink">{categoryName}</Text>
     </TouchableOpacity>
   );
 };
