@@ -1,4 +1,5 @@
 import api from "@/api/api";
+import Header from "@/components/Header";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import { AuthContext } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -564,16 +565,7 @@ const CourseDetailScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* --- Header (Giữ nguyên) --- */}
-      <View className="items-center pt-1 pb-3">
-        <Text className="text-xl font-bold text-gray-800">Course Details</Text>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="absolute left-4 bg-white/70 p-2 rounded-full z-10"
-        >
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header title="Course Details" showBackButton />
 
       <View>
         <Image

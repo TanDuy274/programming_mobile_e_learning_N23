@@ -19,6 +19,7 @@ import api from "@/api/api";
 import ProjectsTab from "@/components/learning/ProjectsTab";
 import QandATab from "@/components/learning/QandATab";
 import LessonsTab from "@/components/learning/LessonsTab";
+import Header from "@/components/Header";
 
 const LearningScreen = () => {
   const layout = useWindowDimensions();
@@ -81,16 +82,8 @@ const LearningScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <View className="items-center pt-1 pb-3">
-        <View className="w-8" />
-        <Text className="text-xl font-bold text-gray-800">Learning</Text>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="absolute left-4 bg-white/70 p-2 rounded-full z-10"
-        >
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header title="Learning" showBackButton />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}

@@ -26,7 +26,10 @@ const Header = ({ title, showBackButton = false }: HeaderProps) => {
       <Text className="text-xl font-bold text-gray-800">{title}</Text>
 
       {/* Icon bên phải */}
-      <TouchableOpacity className="p-1">
+      <TouchableOpacity
+        className="p-1"
+        onPress={() => router.push("/notification")}
+      >
         <Ionicons name="notifications-outline" size={26} color="black" />
       </TouchableOpacity>
     </View>
