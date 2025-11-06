@@ -1,6 +1,7 @@
 import api from "@/api/api";
 import CourseCard from "@/components/CourseCard";
 import EmptyState from "@/components/EmptyState";
+import Header from "@/components/Header";
 import { AuthContext } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -255,18 +256,7 @@ const TeacherProfileScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="items-center pt-1 pb-3">
-        <View className="w-8" />
-        <Text className="text-xl font-bold text-gray-800">
-          Teacher{"'"}s profile
-        </Text>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="absolute left-4 bg-white/70 p-2 rounded-full z-10"
-        >
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header title="Teacher's profile" showBackButton />
 
       {/* --- Banner & Avatar Section --- */}
       <View>

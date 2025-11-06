@@ -160,7 +160,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
 
           {/* --- Notification --- */}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/notification")}>
             <Ionicons name="notifications-outline" size={28} color="white" />
           </TouchableOpacity>
         </View>
