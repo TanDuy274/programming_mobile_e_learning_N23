@@ -1,0 +1,82 @@
+test_id,suite,file_path,description,expected_result,status,notes
+
+# Model Tests
+MT-001,User Model,__tests__/unit/UserModel.spec.js,"Should require name email and password","ValidationError when required fields missing",PASS,"Basic validation"
+MT-002,User Model,__tests__/unit/UserModel.spec.js,"Should validate email format","Invalid email should fail validation",PASS,"Email format"
+MT-003,User Model,__tests__/unit/UserModel.spec.js,"Should set default role and avatar","Default values should be set correctly",PASS,"Default values"
+
+MT-004,Course Model,__tests__/unit/CourseModel.spec.js,"Should require title description price instructor category","ValidationError when required fields missing",PASS,"Basic validation"
+MT-005,Course Model,__tests__/unit/CourseModel.spec.js,"Should validate lesson subdocuments","Lesson subdocs should be validated correctly",PASS,"Subdoc validation"
+
+MT-006,Category Model,__tests__/unit/CategoryModel.spec.js,"Should require a name","ValidationError when name missing",PASS,"Basic validation"
+MT-007,Category Model,__tests__/unit/CategoryModel.spec.js,"Should accept optional description","Valid without description",PASS,"Optional fields"
+
+MT-008,Enrollment Model,__tests__/unit/EnrollmentModel.spec.js,"Should require user and course","ValidationError when required fields missing",PASS,"Basic validation"
+MT-009,Enrollment Model,__tests__/unit/EnrollmentModel.spec.js,"Should enforce progress min/max","Progress within 0-100 bounds",PASS,"Progress bounds"
+
+MT-010,Review Model,__tests__/unit/ReviewModel.spec.js,"Should require user course and rating","ValidationError when required fields missing",PASS,"Basic validation"
+MT-011,Review Model,__tests__/unit/ReviewModel.spec.js,"Should enforce rating bounds (1-5)","Rating within 1-5 bounds",PASS,"Rating bounds"
+
+MT-012,Project Model,__tests__/unit/ProjectModel.spec.js,"Should require user course and description","ValidationError when required fields missing",PASS,"Basic validation"
+MT-013,Project Model,__tests__/unit/ProjectModel.spec.js,"Should validate when required fields provided","Valid with all required fields",PASS,"Complete validation"
+
+MT-014,Question Model,__tests__/unit/QuestionModel.spec.js,"Should require user course and text","ValidationError when required fields missing",PASS,"Basic validation"
+MT-015,Question Model,__tests__/unit/QuestionModel.spec.js,"Should validate when valid objectIds and text provided","Valid with all required fields",PASS,"Complete validation"
+
+# Controller Core Tests
+CT-001,Auth Controller,__tests__/unit/controllers/authController.spec.js,"Should export controller object","Controller module exports",PASS,"Module structure"
+CT-002,Auth Controller,__tests__/unit/controllers/authController.spec.js,"Should have handler functions","Handler functions exist",PASS,"API handlers"
+
+# Category Controller Tests
+CC-001,Get Categories,__tests__/unit/controllers/categoryController.unit.spec.js,"Should return categories array","200 status with categories list",PASS,"Success case"
+CC-002,Get Categories Error,__tests__/unit/controllers/categoryController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
+CC-003,Create Category Input,__tests__/unit/controllers/categoryController.unit.spec.js,"Should validate required name","400 status when name missing",PASS,"Input validation"
+CC-004,Create Category Success,__tests__/unit/controllers/categoryController.unit.spec.js,"Should create new category","201 status with created category",PASS,"Success case"
+CC-005,Create Category Error,__tests__/unit/controllers/categoryController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
+CC-006,Create Category Duplicate,__tests__/unit/controllers/categoryController.unit.spec.js,"Should handle duplicate category","400 status for existing category",PASS,"Duplicate handling"
+
+# Course Controller Tests
+CR-001,Get Courses Basic,__tests__/unit/controllers/courseController.unit.spec.js,"Should return courses array","200 status with courses list",PASS,"Basic listing"
+CR-002,Get Courses Search,__tests__/unit/controllers/courseController.unit.spec.js,"Should filter by search term","Filtered courses by title",PASS,"Search filter"
+CR-003,Get Courses Category,__tests__/unit/controllers/courseController.unit.spec.js,"Should filter by category","Filtered courses by category",PASS,"Category filter"
+CR-004,Get Courses Error,__tests__/unit/controllers/courseController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
+CR-005,Get Course Detail Miss,__tests__/unit/controllers/courseController.unit.spec.js,"Should return 404 for missing course","404 status for invalid id",PASS,"Not found"
+CR-006,Get Course Detail Found,__tests__/unit/controllers/courseController.unit.spec.js,"Should return found course","200 status with course data",PASS,"Success case"
+CR-007,Get Course Detail Error,__tests__/unit/controllers/courseController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
+CR-008,Update Course Missing,__tests__/unit/controllers/courseController.unit.spec.js,"Should return 404 for missing course","404 status for invalid id",PASS,"Not found"
+CR-009,Update Course Auth,__tests__/unit/controllers/courseController.unit.spec.js,"Should check instructor authorization","403 status for wrong instructor",PASS,"Auth check"
+CR-010,Update Course Success,__tests__/unit/controllers/courseController.unit.spec.js,"Should update course data","200 status with updated course",PASS,"Success case"
+CR-011,Delete Course Missing,__tests__/unit/controllers/courseController.unit.spec.js,"Should return 404 for missing course","404 status for invalid id",PASS,"Not found"
+CR-012,Delete Course Auth,__tests__/unit/controllers/courseController.unit.spec.js,"Should check instructor authorization","403 status for wrong instructor",PASS,"Auth check"
+CR-013,Delete Course Success,__tests__/unit/controllers/courseController.unit.spec.js,"Should delete course","200 status with success message",PASS,"Success case"
+CR-014,Teacher Courses List,__tests__/unit/controllers/courseController.unit.spec.js,"Should list teacher courses","200 status with teacher courses",PASS,"Teacher view"
+CR-015,Teacher Courses Error,__tests__/unit/controllers/courseController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
+
+# Review Controller Tests
+RV-001,Create Review Input,__tests__/unit/controllers/reviewController.unit.spec.js,"Should validate rating required","403 status when rating missing",PASS,"Input validation"
+RV-002,Create Review Rating,__tests__/unit/controllers/reviewController.unit.spec.js,"Should validate rating bounds","403 status for invalid rating",PASS,"Rating validation"
+RV-003,Create Review Course,__tests__/unit/controllers/reviewController.unit.spec.js,"Should validate course exists","404 status when course not found",PASS,"Course validation"
+RV-004,Create Review Enrolled,__tests__/unit/controllers/reviewController.unit.spec.js,"Should validate user enrolled","403 status when not enrolled",PASS,"Enrollment check"
+RV-005,Create Review Duplicate,__tests__/unit/controllers/reviewController.unit.spec.js,"Should prevent duplicate reviews","500 status for duplicate review",PASS,"Duplicate prevention"
+RV-006,Create Review Success,__tests__/unit/controllers/reviewController.unit.spec.js,"Should create review and update stats","201 status with created review",PASS,"Success case"
+RV-007,Course Reviews Get,__tests__/unit/controllers/reviewController.unit.spec.js,"Should return course reviews","200 status with reviews list",PASS,"Reviews listing"
+RV-008,Course Reviews Missing,__tests__/unit/controllers/reviewController.unit.spec.js,"Should handle missing course","404 status for invalid course",PASS,"Course validation"
+RV-009,Course Reviews Error,__tests__/unit/controllers/reviewController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
+
+# Question Controller Tests
+QN-001,Create Question Input,__tests__/unit/controllers/questionController.unit.spec.js,"Should validate text required","403 status when text missing",PASS,"Input validation"
+QN-002,Create Question Course,__tests__/unit/controllers/questionController.unit.spec.js,"Should validate course exists","500 status when course not found",PASS,"Course validation"
+QN-003,Create Question Enrolled,__tests__/unit/controllers/questionController.unit.spec.js,"Should validate user enrolled","500 status when not enrolled",PASS,"Enrollment check"
+QN-004,Course Questions Get,__tests__/unit/controllers/questionController.unit.spec.js,"Should return course questions","200 status with questions list",PASS,"Questions listing"
+QN-005,Course Questions Missing,__tests__/unit/controllers/questionController.unit.spec.js,"Should handle missing course","500 status for invalid course",PASS,"Course validation"
+QN-006,Course Questions Empty,__tests__/unit/controllers/questionController.unit.spec.js,"Should return empty array","200 status with empty array",PASS,"Empty case"
+QN-007,Course Questions Error,__tests__/unit/controllers/questionController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
+
+# Project Controller Tests  
+PJ-001,Create Project Input,__tests__/unit/controllers/projectController.unit.spec.js,"Should validate required fields","500 status when fields missing",PASS,"Input validation"
+PJ-002,Create Project Course,__tests__/unit/controllers/projectController.unit.spec.js,"Should validate course exists","500 status when course not found",PASS,"Course validation" 
+PJ-003,Create Project Enrolled,__tests__/unit/controllers/projectController.unit.spec.js,"Should validate user enrolled","500 status when not enrolled",PASS,"Enrollment check"
+PJ-004,Course Projects Get,__tests__/unit/controllers/projectController.unit.spec.js,"Should return course projects","200 status with projects list",PASS,"Projects listing"
+PJ-005,Course Projects Missing,__tests__/unit/controllers/projectController.unit.spec.js,"Should handle missing course","500 status for invalid course",PASS,"Course validation"
+PJ-006,Course Projects Empty,__tests__/unit/controllers/projectController.unit.spec.js,"Should return empty array","200 status with empty array",PASS,"Empty case"
+PJ-007,Course Projects Error,__tests__/unit/controllers/projectController.unit.spec.js,"Should handle server error","500 status with error message",PASS,"Error handling"
