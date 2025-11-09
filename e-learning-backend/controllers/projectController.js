@@ -6,7 +6,7 @@ const Project = require("../models/ProjectModel");
 const getProjectsForCourse = async (req, res) => {
   try {
     const projects = await Project.find({ course: req.params.courseId })
-      .populate("user", "name")
+      .populate("user", "name avatar")
       .sort({ createAt: -1 });
     res.json(projects);
   } catch (error) {

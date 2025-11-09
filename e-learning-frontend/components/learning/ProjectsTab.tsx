@@ -13,7 +13,7 @@ import Toast from "react-native-toast-message";
 
 interface Project {
   _id: string;
-  user: { name: string };
+  user: { name: string; avatar: string };
   description: string;
   createdAt: string;
 }
@@ -59,7 +59,9 @@ const ProjectsTab = ({ courseId }: { courseId: string }) => {
             <View className="flex-row items-center mb-2">
               <Image
                 source={{
-                  uri: `https://ui-avatars.com/api/?name=${item.user.name}&background=random`,
+                  uri:
+                    item.user.avatar ||
+                    `https://ui-avatars.com/api/?name=${item.user.name}&background=random`,
                 }}
                 className="w-10 h-10 rounded-full mr-3"
               />
