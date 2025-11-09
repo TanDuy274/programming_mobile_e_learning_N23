@@ -80,8 +80,9 @@ const QandATab = ({ courseId }: { courseId: string }) => {
             <View className="flex-row items-center mb-2">
               <Image
                 source={{
-                  // uri: `https://ui-avatars.com/api/?name=${item.user.name}&background=random`,
-                  uri: item.user?.avatar || "https://i.imgur.com/6VBx3io.png",
+                  uri:
+                    item.user.avatar ||
+                    `https://ui-avatars.com/api/?name=${item.user.name}&background=random`,
                 }}
                 className="w-8 h-8 rounded-full mr-3"
               />
