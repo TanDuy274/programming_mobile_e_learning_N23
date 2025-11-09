@@ -11,6 +11,7 @@ interface UserInfo {
   following: string[];
   savedCourses: string[];
   avatar?: string;
+  headline?: string;
 }
 
 interface Enrollment {

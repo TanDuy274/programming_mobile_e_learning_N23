@@ -1,4 +1,3 @@
-// Ví dụ: src/screens/SearchScreen.tsx
 import api from "@/api/api";
 import EmptyState from "@/components/EmptyState";
 import SavedCourseCard from "@/components/SavedCourseCard";
@@ -7,13 +6,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useContext, useState } from "react";
 import {
-  View,
-  Text,
-  StatusBar,
-  Image,
-  ScrollView,
   ActivityIndicator,
-  StyleSheet,
+  Image,
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  Text,
+  View,
 } from "react-native";
 import {
   Menu,
@@ -21,19 +20,16 @@ import {
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ProfileScreen = () => {
-  const { logout, userInfo, savedCourses, enrollments } =
+  const { logout, userInfo, savedCourses, enrollments, fetchEnrollments } =
     useContext(AuthContext);
   const router = useRouter();
-  const insets = useSafeAreaInsets(); // Get safe area dimensions
 
   const [savedCoursesDetails, setSavedCoursesDetails] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const onGoingCount = enrollments.filter(
     (e) => e.progress > 0 && e.progress < 100
@@ -44,50 +40,58 @@ const ProfileScreen = () => {
     useCallback(() => {
       StatusBar.setBackgroundColor("#FFFFFF");
       StatusBar.setBarStyle("dark-content");
+      fetchEnrollments();
     }, [])
   );
 
+  const fetchSavedCourseDetails = useCallback(async () => {
+    if (savedCourses.length === 0) {
+      setSavedCoursesDetails([]);
+      return;
+    }
+    try {
+      const response = await api.post("/courses/by-ids", {
+        ids: savedCourses,
+      });
+      setSavedCoursesDetails(response.data);
+    } catch (error: any) {
+      console.error(
+        "Error fetching saved course details:",
+        error.response?.data || error.message
+      );
+    }
+  }, [savedCourses]);
+
   useFocusEffect(
-    React.useCallback(() => {
-      const fetchSavedCourseDetails = async () => {
-        if (savedCourses.length === 0) {
-          setSavedCoursesDetails([]);
-          return;
-        }
+    useCallback(() => {
+      const loadData = async () => {
         setIsLoading(true);
-        try {
-          const response = await api.post("/courses/by-ids", {
-            ids: savedCourses,
-          });
-          setSavedCoursesDetails(response.data);
-        } catch (error: any) {
-          console.error(
-            "Error fetching saved course details:",
-            error.response?.data || error.message
-          );
-        } finally {
-          setIsLoading(false);
-        }
+        await fetchSavedCourseDetails();
+        setIsLoading(false);
       };
-      fetchSavedCourseDetails();
-    }, [savedCourses])
+      loadData();
+    }, [fetchSavedCourseDetails])
   );
+
+  const onRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await fetchSavedCourseDetails();
+    await fetchEnrollments();
+    setIsRefreshing(false);
+  }, [fetchSavedCourseDetails]);
 
   const handleLogout = async () => {
     try {
-      await logout(); // Gọi hàm logout từ context
-      // SAU KHI LOGOUT XONG, chuyển hướng về login
-      router.replace("/(auth)/login"); // Dùng replace để xóa stack cũ
+      await logout();
+      router.replace("/(auth)/login");
     } catch (error) {
       console.error("Error during logout navigation:", error);
-      // Có thể thêm Toast báo lỗi nếu cần
     }
   };
 
   return (
-    // Use SafeAreaView only for top inset, remove bottom padding
     <SafeAreaView className="flex-1 bg-white" edges={["left", "right", "top"]}>
-      {/* --- Custom Header --- */}
+      {/*Custom Header*/}
       <View className="flex-row items-center justify-between px-4 py-4 bg-white border-b border-gray-200">
         <View className="w-8" />
         <Text className="text-xl font-bold text-gray-800">User's profile</Text>
@@ -134,8 +138,16 @@ const ProfileScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="flex-1 bg-gray-50"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            colors={["#4F46E5"]}
+            tintColor={"#4F46E5"}
+          />
+        }
       >
-        {/* --- Banner & Avatar Section --- */}
+        {/*Banner & Avatar Section*/}
         <View className="">
           <Image
             source={{
@@ -155,18 +167,18 @@ const ProfileScreen = () => {
           </View>
         </View>
 
-        {/* --- User Info Section --- */}
+        {/*User Info Section*/}
         <View className="items-center px-5  pt-4 pb-6">
           <Text className="text-2xl font-bold text-gray-800 text-center">
             {userInfo?.name}
           </Text>
           {/* Use Title instead of Email */}
           <Text className="text-md text-gray-500 mt-1">
-            {userInfo?.role || "UX/UI Designer"}
+            {userInfo?.headline || "UX/UI Designer"}
           </Text>
         </View>
 
-        {/* --- Stats Section --- */}
+        {/* Stats Section*/}
         {/* Add background color and padding */}
         <View className="flex-row bg-white mx-4 rounded-2xl shadow-sm py-5 mb-6">
           <View className="flex-1 items-center">
@@ -193,12 +205,12 @@ const ProfileScreen = () => {
           </View>
         </View>
 
-        {/* --- Saved Courses Section --- */}
+        {/* Saved Courses Section */}
         <View className="px-5 pt-6 pb-10 bg-gray-50">
           <Text className="text-xl font-bold text-gray-800 mb-4">
             Saved courses
           </Text>
-          {isLoading ? (
+          {isLoading && !isRefreshing ? (
             <ActivityIndicator size="large" className="my-10" />
           ) : savedCoursesDetails.length > 0 ? (
             <View>
