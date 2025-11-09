@@ -6,7 +6,7 @@ const Question = require("../models/QuestionModel");
 const getQuestionsForCourse = async (req, res) => {
   try {
     const questions = await Question.find({ course: req.params.courseId })
-      .populate("user", "name")
+      .populate("user", "name avatar")
       .sort({ createAt: -1 });
     res.json(questions);
   } catch (error) {

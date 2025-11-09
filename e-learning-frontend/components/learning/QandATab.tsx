@@ -17,7 +17,7 @@ import Toast from "react-native-toast-message";
 
 interface Question {
   _id: string;
-  user: { name: string };
+  user: { name: string; avatar: string };
   text: string;
   createdAt: string;
 }
@@ -80,7 +80,8 @@ const QandATab = ({ courseId }: { courseId: string }) => {
             <View className="flex-row items-center mb-2">
               <Image
                 source={{
-                  uri: `https://ui-avatars.com/api/?name=${item.user.name}&background=random`,
+                  // uri: `https://ui-avatars.com/api/?name=${item.user.name}&background=random`,
+                  uri: item.user?.avatar || "https://i.imgur.com/6VBx3io.png",
                 }}
                 className="w-8 h-8 rounded-full mr-3"
               />
