@@ -45,12 +45,12 @@ const HOT_TOPICS = [
 const categoryDetails: {
   [key: string]: { icon: keyof typeof Ionicons.glyphMap; color: string };
 } = {
-  Business: { icon: "briefcase-outline", color: "#3498db" },
-  Code: { icon: "code-slash-outline", color: "#e74c3c" },
-  Design: { icon: "color-palette-outline", color: "#9b59b6" },
-  Writing: { icon: "create-outline", color: "#34495e" },
-  Movie: { icon: "film-outline", color: "#f1c40f" },
-  Language: { icon: "language-outline", color: "#2ecc71" },
+  "Lập trình Web": { icon: "globe-outline", color: "#1abc9c" },
+  "React Native": { icon: "logo-react", color: "#61dafb" },
+  "Khoa học dữ liệu": { icon: "analytics-outline", color: "#e67e22" },
+  "Thiết kế UI/UX": { icon: "layers-outline", color: "#e91e63" },
+  DevOps: { icon: "sync-circle-outline", color: "#16a085" },
+  "Hệ quản trị CSDL": { icon: "server-outline", color: "#f39c12" },
 };
 
 const SearchScreen = () => {

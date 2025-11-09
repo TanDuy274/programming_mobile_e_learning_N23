@@ -1,19 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  RefreshControl,
-  Image,
-  StatusBar,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import api from "@/api/api";
+import CourseCard from "@/components/CourseCard";
+import Header from "@/components/Header";
+import { Lesson } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import api from "@/api/api";
-import Header from "@/components/Header";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Instructor {
   name: string;
@@ -32,6 +33,7 @@ interface Course {
   instructor: Instructor;
   category: Category;
   totalDurationMinutes?: number;
+  lessons: Lesson[];
 }
 
 type ParamStr = string | string[] | undefined;
@@ -235,42 +237,17 @@ const CoursesScreen = () => {
 
   const renderItem = useCallback(
     ({ item }: { item: Course }) => (
-      <TouchableOpacity
-        onPress={() => router.push(`/course/${item._id}`)}
-        className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-200 overflow-hidden"
-      >
-        <Image
-          source={{ uri: item.thumbnail }}
-          className="w-full h-48"
-          resizeMode="cover"
-        />
-        <View className="p-4">
-          <Text className="text-lg font-bold text-gray-900 mb-1">
-            {item.title}
-          </Text>
-          <Text className="text-gray-500 text-sm">
-            {item.instructor?.name} • {item.category?.name}
-          </Text>
-
-          <View className="flex-row items-center mt-2">
-            <Ionicons name="star" size={16} color="#f1c40f" />
-            <Text className="ml-1 text-sm text-gray-700">
-              {Number(item.rating || 0).toFixed(1)} ({item.reviewCount || 0})
-            </Text>
-          </View>
-
-          <View className="flex-row justify-between items-center mt-3">
-            <Text className="text-[#55BAD3] font-bold text-lg">
-              ${Number(item.price || 0).toFixed(2)}
-            </Text>
-            {item.totalDurationMinutes ? (
-              <Text className="text-gray-500 text-sm">
-                ⏱ {item.totalDurationMinutes} minutes
-              </Text>
-            ) : null}
-          </View>
-        </View>
-      </TouchableOpacity>
+      <CourseCard
+        id={item._id}
+        instructor={item.instructor.name}
+        lessonsCount={item.lessons.length}
+        price={item.price}
+        rating={item.rating}
+        reviews={item.reviewCount}
+        title={item.title}
+        imageUrl={item.thumbnail}
+        layout="vertical"
+      />
     ),
     []
   );
