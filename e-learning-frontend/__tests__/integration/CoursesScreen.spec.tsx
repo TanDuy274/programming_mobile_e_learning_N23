@@ -40,6 +40,12 @@ const mockCourses = [
     price: 0,
     rating: 4.5,
     totalReviews: 100,
+    reviewCount: 100,
+    lessons: [
+      { _id: "l1", title: "Lesson 1", duration: 10, youtubeVideoId: "vid1" },
+    ],
+    thumbnail: "https://example.com/image1.jpg",
+    category: { name: "Programming" },
   },
 ];
 
