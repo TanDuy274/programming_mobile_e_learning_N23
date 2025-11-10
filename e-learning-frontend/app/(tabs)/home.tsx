@@ -136,8 +136,13 @@ const HomeScreen = () => {
       >
         <View>
           <Text className="text-3xl font-bold text-white">
-            Hello, {userInfo?.name || "Guest"}!
+            Hello,{" "}
+            {(userInfo?.name?.length ?? 0) > 15
+              ? userInfo?.name.split(" ").pop()
+              : userInfo?.name || "Guest"}
+            !
           </Text>
+
           <Text className="text-lg text-white mt-1">
             What do you want to learn today?
           </Text>
